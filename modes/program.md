@@ -283,3 +283,9 @@ Single line, 10 tab-separated columns:
    by `modes/sop.md` (US-004).
 6. **Every evaluated program gets a tracker entry.** Even if score is below 3.5
    and the recommendation is to skip — log it as `Evaluated` with the reason in notes.
+7. **After every evaluation, remind the user to update the rec tracker:**
+   > "Don't forget to add [University — Program] to `data/recommendations.md` for each
+   > recommender you plan to ask."
+   Do this only if `data/recommendations.md` exists. If it doesn't exist, note:
+   > "The recommendation letter tracker hasn't been set up yet. Run `/career-ops rec-tracker`
+   > to create it."
