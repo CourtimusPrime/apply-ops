@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use career-ops, please cite it using these metadata."
+message: "If you use apply-ops, please cite it using these metadata."
 title: "Career-Ops: AI-Powered Job Search Pipeline"
 type: software
 authors:
@@ -7,7 +7,7 @@ authors:
     given-names: "Santiago"
     website: "https://santifer.io"
 url: "https://santifer.io"
-repository-code: "https://github.com/santifer/career-ops"
+repository-code: "https://github.com/santifer/apply-ops"
 license: MIT
 keywords:
   - ai

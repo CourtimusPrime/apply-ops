@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "career-ops",
+      "name": "apply-ops",
       "dependencies": {
         "playwright": "^1.58.1",
       },

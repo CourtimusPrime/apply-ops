@@ -50,7 +50,7 @@ Career-Ops convierte cualquier CLI de IA en un centro de mando de busqueda de em
 
 > **Aviso: las primeras evaluaciones no seran buenas.** El sistema no te conoce todavia. Dale contexto -- tu CV, tu historia profesional, tus proof points, tus preferencias, en que eres bueno, que quieres evitar. Cuanto mas lo nutras, mejor filtra. Piensa en ello como hacer onboarding a un recruiter nuevo: la primera semana necesita conocerte, luego se vuelve invaluable.
 
-Construido por alguien que lo uso para evaluar 740+ ofertas, generar 100+ CVs personalizados, y conseguir un rol de Head of Applied AI. [Lee el case study completo](https://santifer.io/career-ops).
+Construido por alguien que lo uso para evaluar 740+ ofertas, generar 100+ CVs personalizados, y conseguir un rol de Head of Applied AI. [Lee el case study completo](https://santifer.io/apply-ops).
 
 ## Features
 
@@ -71,8 +71,8 @@ Construido por alguien que lo uso para evaluar 740+ ofertas, generar 100+ CVs pe
 
 ```bash
 # 1. Clonar e instalar
-git clone https://github.com/santifer/career-ops.git
-cd career-ops && npm install
+git clone https://github.com/santifer/apply-ops.git
+cd apply-ops && npm install
 npx playwright install chromium   # Necesario para generar PDFs
 
 # 2. Verificar setup
@@ -95,7 +95,7 @@ claude   # Abrir Claude Code en este directorio
 # "Actualiza mi perfil con este CV que te pego"
 
 # 6. Usar
-# Pega una URL de oferta o ejecuta /career-ops
+# Pega una URL de oferta o ejecuta /apply-ops
 ```
 
 > **El sistema esta diseñado para que Claude lo personalice.** Modes, arquetipos, scoring, scripts de negociacion -- solo pidelo. Claude lee los mismos archivos que usa, asi que sabe exactamente que editar.
@@ -107,19 +107,19 @@ Guia completa en [docs/SETUP.md](docs/SETUP.md).
 Career-ops es un unico slash command con multiples modos:
 
 ```
-/career-ops                → Mostrar todos los comandos
-/career-ops {pega un JD}   → Pipeline completo (evaluar + PDF + tracker)
-/career-ops scan           → Escanear portales
-/career-ops pdf            → Generar CV ATS-optimizado
-/career-ops batch          → Evaluar ofertas en batch
-/career-ops tracker        → Ver estado de aplicaciones
-/career-ops apply          → Rellenar formularios con IA
-/career-ops pipeline       → Procesar URLs pendientes
-/career-ops contacto       → Mensaje LinkedIn outreach
-/career-ops deep           → Research profundo de empresa
+/apply-ops                → Mostrar todos los comandos
+/apply-ops {pega un JD}   → Pipeline completo (evaluar + PDF + tracker)
+/apply-ops scan           → Escanear portales
+/apply-ops pdf            → Generar CV ATS-optimizado
+/apply-ops batch          → Evaluar ofertas en batch
+/apply-ops tracker        → Ver estado de aplicaciones
+/apply-ops apply          → Rellenar formularios con IA
+/apply-ops pipeline       → Procesar URLs pendientes
+/apply-ops contacto       → Mensaje LinkedIn outreach
+/apply-ops deep           → Research profundo de empresa
 ```
 
-O simplemente pega una URL o descripcion de oferta -- career-ops la detecta y ejecuta el pipeline completo.
+O simplemente pega una URL o descripcion de oferta -- apply-ops la detecta y ejecuta el pipeline completo.
 
 ## Como funciona
 
@@ -173,7 +173,7 @@ Features: 6 pestañas de filtro, 4 modos de ordenacion, vista agrupada/plana, pr
 ## Estructura del proyecto
 
 ```
-career-ops/
+apply-ops/
 ├── CLAUDE.md                    # Instrucciones del agente
 ├── cv.md                        # Tu CV (crealo tu)
 ├── article-digest.md            # Tus proof points (opcional)
@@ -218,11 +218,11 @@ career-ops/
 
 ## Sobre el autor
 
-Soy Santiago -- Head of Applied AI, ex-fundador (monte y vendi un negocio que sigue funcionando con mi nombre). Construi career-ops para gestionar mi propia busqueda de empleo. Funciono: lo use para conseguir mi puesto actual.
+Soy Santiago -- Head of Applied AI, ex-fundador (monte y vendi un negocio que sigue funcionando con mi nombre). Construi apply-ops para gestionar mi propia busqueda de empleo. Funciono: lo use para conseguir mi puesto actual.
 
 Mi portfolio y otros proyectos open source → [santifer.io](https://santifer.io)
 
-☕ [Invitame a un cafe](https://buymeacoffee.com/santifer) si career-ops te ayudo en tu busqueda.
+☕ [Invitame a un cafe](https://buymeacoffee.com/santifer) si apply-ops te ayudo en tu busqueda.
 
 ## Documentacion
 
@@ -236,17 +236,17 @@ Mi portfolio y otros proyectos open source → [santifer.io](https://santifer.io
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=santifer%2Fcareer-ops&type=timeline&legend=top-left">
+<a href="https://www.star-history.com/?repos=santifer%2Fapply-ops&type=timeline&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=santifer/career-ops&type=timeline&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=santifer/career-ops&type=timeline&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=santifer/career-ops&type=timeline&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=santifer/apply-ops&type=timeline&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=santifer/apply-ops&type=timeline&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=santifer/apply-ops&type=timeline&legend=top-left" />
  </picture>
 </a>
 
 ## Aviso legal
 
-**career-ops es una herramienta local y open source — NO un servicio alojado.** Al usar este software, aceptas que:
+**apply-ops es una herramienta local y open source — NO un servicio alojado.** Al usar este software, aceptas que:
 
 1. **Tu controlas tus datos.** Tu CV, datos de contacto e informacion personal se quedan en tu maquina y se envian directamente al proveedor de IA que elijas (Anthropic, OpenAI, etc.). No recopilamos, almacenamos ni tenemos acceso a tus datos.
 2. **Tu controlas la IA.** Los prompts por defecto instruyen a la IA a no enviar aplicaciones automaticamente, pero los modelos pueden comportarse de forma impredecible. Si modificas los prompts o usas otros modelos, lo haces bajo tu responsabilidad. **Revisa siempre el contenido generado antes de enviarlo.**

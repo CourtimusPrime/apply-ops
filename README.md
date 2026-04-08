@@ -52,7 +52,7 @@ Career-ops is agentic: Claude Code navigates career pages with Playwright, evalu
 
 > **Heads up: the first evaluations won't be great.** The system doesn't know you yet. Feed it context -- your CV, your career story, your proof points, your preferences, what you're good at, what you want to avoid. The more you nurture it, the better it gets. Think of it as onboarding a new recruiter: the first week they need to learn about you, then they become invaluable.
 
-Built by someone who used it to evaluate 740+ job offers, generate 100+ tailored CVs, and land a Head of Applied AI role. [Read the full case study](https://santifer.io/career-ops-system).
+Built by someone who used it to evaluate 740+ job offers, generate 100+ tailored CVs, and land a Head of Applied AI role. [Read the full case study](https://santifer.io/apply-ops-system).
 
 ## Features
 
@@ -73,8 +73,8 @@ Built by someone who used it to evaluate 740+ job offers, generate 100+ tailored
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/santifer/career-ops.git
-cd career-ops && npm install
+git clone https://github.com/santifer/apply-ops.git
+cd apply-ops && npm install
 npx playwright install chromium   # Required for PDF generation
 
 # 2. Check setup
@@ -97,7 +97,7 @@ claude   # Open Claude Code in this directory
 # "Update my profile with this CV I'm pasting"
 
 # 6. Start using
-# Paste a job URL or run /career-ops
+# Paste a job URL or run /apply-ops
 ```
 
 > **The system is designed to be customized by Claude itself.** Modes, archetypes, scoring weights, negotiation scripts -- just ask Claude to change them. It reads the same files it uses, so it knows exactly what to edit.
@@ -109,21 +109,21 @@ See [docs/SETUP.md](docs/SETUP.md) for the full setup guide.
 Career-ops is a single slash command with multiple modes:
 
 ```
-/career-ops                → Show all available commands
-/career-ops {paste a JD}   → Full auto-pipeline (evaluate + PDF + tracker)
-/career-ops scan           → Scan portals for new offers
-/career-ops pdf            → Generate ATS-optimized CV
-/career-ops batch          → Batch evaluate multiple offers
-/career-ops tracker        → View application status
-/career-ops apply          → Fill application forms with AI
-/career-ops pipeline       → Process pending URLs
-/career-ops contacto       → LinkedIn outreach message
-/career-ops deep           → Deep company research
-/career-ops training       → Evaluate a course/cert
-/career-ops project        → Evaluate a portfolio project
+/apply-ops                → Show all available commands
+/apply-ops {paste a JD}   → Full auto-pipeline (evaluate + PDF + tracker)
+/apply-ops scan           → Scan portals for new offers
+/apply-ops pdf            → Generate ATS-optimized CV
+/apply-ops batch          → Batch evaluate multiple offers
+/apply-ops tracker        → View application status
+/apply-ops apply          → Fill application forms with AI
+/apply-ops pipeline       → Process pending URLs
+/apply-ops contacto       → LinkedIn outreach message
+/apply-ops deep           → Deep company research
+/apply-ops training       → Evaluate a course/cert
+/apply-ops project        → Evaluate a portfolio project
 ```
 
-Or just paste a job URL or description directly -- career-ops auto-detects it and runs the full pipeline.
+Or just paste a job URL or description directly -- apply-ops auto-detects it and runs the full pipeline.
 
 ## How It Works
 
@@ -177,7 +177,7 @@ Features: 6 filter tabs, 4 sort modes, grouped/flat view, lazy-loaded previews, 
 ## Project Structure
 
 ```
-career-ops/
+apply-ops/
 ├── CLAUDE.md                    # Agent instructions
 ├── cv.md                        # Your CV (create this)
 ├── article-digest.md            # Your proof points (optional)
@@ -226,25 +226,25 @@ career-ops/
 
 ## About the Author
 
-I'm Santiago -- Head of Applied AI, former founder (built and sold a business that still runs with my name on it). I built career-ops to manage my own job search. It worked: I used it to land my current role.
+I'm Santiago -- Head of Applied AI, former founder (built and sold a business that still runs with my name on it). I built apply-ops to manage my own job search. It worked: I used it to land my current role.
 
 My portfolio and other open source projects → [santifer.io](https://santifer.io)
 
-☕ [Buy me a coffee](https://buymeacoffee.com/santifer) if career-ops helped your job search.
+☕ [Buy me a coffee](https://buymeacoffee.com/santifer) if apply-ops helped your job search.
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=santifer%2Fcareer-ops&type=timeline&legend=top-left">
+<a href="https://www.star-history.com/?repos=santifer%2Fapply-ops&type=timeline&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=santifer/career-ops&type=timeline&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=santifer/career-ops&type=timeline&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=santifer/career-ops&type=timeline&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=santifer/apply-ops&type=timeline&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=santifer/apply-ops&type=timeline&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=santifer/apply-ops&type=timeline&legend=top-left" />
  </picture>
 </a>
 
 ## Disclaimer
 
-**career-ops is a local, open-source tool — NOT a hosted service.** By using this software, you acknowledge:
+**apply-ops is a local, open-source tool — NOT a hosted service.** By using this software, you acknowledge:
 
 1. **You control your data.** Your CV, contact info, and personal data stay on your machine and are sent directly to the AI provider you choose (Anthropic, OpenAI, etc.). We do not collect, store, or have access to any of your data.
 2. **You control the AI.** The default prompts instruct the AI not to auto-submit applications, but AI models can behave unpredictably. If you modify the prompts or use different models, you do so at your own risk. **Always review AI-generated content for accuracy before submitting.**

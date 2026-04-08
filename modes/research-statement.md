@@ -24,7 +24,7 @@ statement for [university]", or any similar request.
      research-designated projects) → warn:
      > "Your cv.md has limited formal research experience. A research statement may not
      > be required or expected for your program type. Consider whether an SOP is more
-     > appropriate (`/career-ops sop`). Proceed with research statement anyway? (yes/no)"
+     > appropriate (`/apply-ops sop`). Proceed with research statement anyway? (yes/no)"
    - If yes: proceed in exploratory mode regardless of program type
 5. Detect specificity mode from program type:
    - Research-track MS, thesis MS, or PhD-adjacent → **defined-agenda mode**
@@ -139,4 +139,4 @@ against your cv.md. Do not paste without reading.
 5. **Warn before proceeding** if `cv.md` shows minimal research experience — the user
    should make an informed choice about whether this document is appropriate.
 6. **Do not conflate research statement with SOP.** If the user needs both, this mode
-   generates the research statement only. Direct them to `/career-ops sop` for the SOP.
+   generates the research statement only. Direct them to `/apply-ops sop` for the SOP.

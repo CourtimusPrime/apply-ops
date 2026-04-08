@@ -107,7 +107,7 @@ Append one line per new program:
 - [ ] {url} | {university} | {program}
 ```
 
-This format is compatible with `/career-ops program` (the program evaluation mode).
+This format is compatible with `/apply-ops program` (the program evaluation mode).
 
 ## Deadline Management
 
@@ -139,7 +139,7 @@ Discovery queries run: N
 🔁 Duplicates (skipped): N
 ⚠️  Could not verify (check manually): N
 
-→ Run /career-ops pipeline to evaluate new programs.
+→ Run /apply-ops pipeline to evaluate new programs.
 ```
 
 If no new programs were found, say so explicitly — do not silently succeed.

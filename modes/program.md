@@ -287,5 +287,5 @@ Single line, 10 tab-separated columns:
    > "Don't forget to add [University — Program] to `data/recommendations.md` for each
    > recommender you plan to ask."
    Do this only if `data/recommendations.md` exists. If it doesn't exist, note:
-   > "The recommendation letter tracker hasn't been set up yet. Run `/career-ops rec-tracker`
+   > "The recommendation letter tracker hasn't been set up yet. Run `/apply-ops rec-tracker`
    > to create it."

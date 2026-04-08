@@ -1,6 +1,6 @@
 # Mode: pipeline — URL Inbox
 
-Processes program URLs accumulated in `data/pipeline.md`. The user adds URLs at any time and then runs `/career-ops pipeline` to process them all.
+Processes program URLs accumulated in `data/pipeline.md`. The user adds URLs at any time and then runs `/apply-ops pipeline` to process them all.
 
 ## Workflow
 

@@ -11,8 +11,8 @@
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/santifer/career-ops.git
-cd career-ops
+git clone https://github.com/santifer/apply-ops.git
+cd apply-ops
 npm install
 npx playwright install chromium   # Required for PDF generation
 ```
@@ -57,12 +57,12 @@ Then paste a job offer URL or description. Career-ops will automatically evaluat
 | Action | How |
 |--------|-----|
 | Evaluate an offer | Paste a URL or JD text |
-| Search for offers | `/career-ops scan` |
-| Process pending URLs | `/career-ops pipeline` |
-| Generate a PDF | `/career-ops pdf` |
-| Batch evaluate | `/career-ops batch` |
-| Check tracker status | `/career-ops tracker` |
-| Fill application form | `/career-ops apply` |
+| Search for offers | `/apply-ops scan` |
+| Process pending URLs | `/apply-ops pipeline` |
+| Generate a PDF | `/apply-ops pdf` |
+| Batch evaluate | `/apply-ops batch` |
+| Check tracker status | `/apply-ops tracker` |
+| Fill application form | `/apply-ops apply` |
 
 ## Verify Setup
 

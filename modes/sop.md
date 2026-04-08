@@ -22,7 +22,7 @@ statement for [university]", or any similar request.
      (program type, positioning advice) and Block G (SOP outline if score ≥ 4.5)
    - If not found: proceed with generic framing; note the limitation:
      > "No evaluation report found for this program. Faculty alignment will be generic.
-     > For best results, run a program evaluation first (`/career-ops program [URL]`)."
+     > For best results, run a program evaluation first (`/apply-ops program [URL]`)."
 5. Detect program type:
    - From the evaluation report's detected type, OR
    - From `profile.yml → target_programs.track_preference`, OR

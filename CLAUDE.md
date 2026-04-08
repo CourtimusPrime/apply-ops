@@ -33,16 +33,16 @@ node update-system.mjs check
 
 Parse the JSON output:
 - `{"status": "update-available", "local": "1.0.0", "remote": "1.1.0", "changelog": "..."}` → tell the user:
-  > "career-ops update available (v{local} → v{remote}). Your data (CV, profile, tracker, reports) will NOT be touched. Want me to update?"
+  > "apply-ops update available (v{local} → v{remote}). Your data (CV, profile, tracker, reports) will NOT be touched. Want me to update?"
   If yes → run `node update-system.mjs apply`. If no → run `node update-system.mjs dismiss`.
 - `{"status": "up-to-date"}` → say nothing
 - `{"status": "dismissed"}` → say nothing
 - `{"status": "offline"}` → say nothing
 
-The user can also say "check for updates" or "update career-ops" at any time to force a check.
+The user can also say "check for updates" or "update apply-ops" at any time to force a check.
 To rollback: `node update-system.mjs rollback`
 
-## What is career-ops
+## What is apply-ops
 
 AI graduate application automation built on Claude Code: pipeline tracking, program evaluation, academic CV generation, university scanning, batch processing.
 
@@ -68,21 +68,21 @@ When using [OpenCode](https://opencode.ai), the following slash commands are ava
 
 | Command | Claude Code Equivalent | Description |
 |---------|------------------------|-------------|
-| `/career-ops` | `/career-ops` | Show menu or evaluate program with args |
-| `/career-ops-pipeline` | `/career-ops pipeline` | Process pending program URLs from inbox |
-| `/career-ops-evaluate` | `/career-ops oferta` | Evaluate program (A-F scoring) |
-| `/career-ops-compare` | `/career-ops ofertas` | Compare and rank multiple programs |
-| `/career-ops-contact` | `/career-ops contacto` | Professor cold email (find faculty + draft) |
-| `/career-ops-deep` | `/career-ops deep` | Deep program + faculty research |
-| `/career-ops-pdf` | `/career-ops pdf` | Generate ATS-optimized academic CV |
-| `/career-ops-training` | `/career-ops training` | Evaluate course/cert against goals |
-| `/career-ops-project` | `/career-ops project` | Evaluate portfolio project idea |
-| `/career-ops-tracker` | `/career-ops tracker` | Application status overview |
-| `/career-ops-apply` | `/career-ops apply` | Live application assistant |
-| `/career-ops-scan` | `/career-ops scan` | Scan universities for new programs |
-| `/career-ops-batch` | `/career-ops batch` | Batch processing with parallel workers |
+| `/apply-ops` | `/apply-ops` | Show menu or evaluate program with args |
+| `/apply-ops-pipeline` | `/apply-ops pipeline` | Process pending program URLs from inbox |
+| `/apply-ops-evaluate` | `/apply-ops oferta` | Evaluate program (A-F scoring) |
+| `/apply-ops-compare` | `/apply-ops ofertas` | Compare and rank multiple programs |
+| `/apply-ops-contact` | `/apply-ops contacto` | Professor cold email (find faculty + draft) |
+| `/apply-ops-deep` | `/apply-ops deep` | Deep program + faculty research |
+| `/apply-ops-pdf` | `/apply-ops pdf` | Generate ATS-optimized academic CV |
+| `/apply-ops-training` | `/apply-ops training` | Evaluate course/cert against goals |
+| `/apply-ops-project` | `/apply-ops project` | Evaluate portfolio project idea |
+| `/apply-ops-tracker` | `/apply-ops tracker` | Application status overview |
+| `/apply-ops-apply` | `/apply-ops apply` | Live application assistant |
+| `/apply-ops-scan` | `/apply-ops scan` | Scan universities for new programs |
+| `/apply-ops-batch` | `/apply-ops batch` | Batch processing with parallel workers |
 
-**Note:** OpenCode commands invoke the same `.claude/skills/career-ops/SKILL.md` skill used by Claude Code. The `modes/*` files are shared between both platforms.
+**Note:** OpenCode commands invoke the same `.claude/skills/apply-ops/SKILL.md` skill used by Claude Code. The `modes/*` files are shared between both platforms.
 
 ### First Run — Onboarding (IMPORTANT)
 
@@ -157,8 +157,8 @@ Store insights in `config/profile.yml` (under `narrative` or `academic_profile`)
 Once all files exist, confirm:
 > "You're all set! You can now:
 > - Paste a program URL to evaluate it
-> - Run `/career-ops scan` (or `/career-ops-scan` if using OpenCode) to search universities
-> - Run `/career-ops` to see all commands
+> - Run `/apply-ops scan` (or `/apply-ops-scan` if using OpenCode) to search universities
+> - Run `/apply-ops` to see all commands
 >
 > Everything is customizable — just ask me to change anything.
 >
@@ -167,7 +167,7 @@ Once all files exist, confirm:
 Then suggest automation:
 > "Want me to scan for new programs automatically? I can set up a recurring scan every few days so you don't miss anything. Just say 'scan every 3 days' and I'll configure it."
 
-If the user accepts, use the `/loop` or `/schedule` skill (if available) to set up a recurring `/career-ops scan` (or `/career-ops-scan` if using OpenCode). If those aren't available, suggest adding a cron job or remind them to run `/career-ops scan` (or `/career-ops-scan` if using OpenCode) periodically to check for new programs.
+If the user accepts, use the `/loop` or `/schedule` skill (if available) to set up a recurring `/apply-ops scan` (or `/apply-ops-scan` if using OpenCode). If those aren't available, suggest adding a cron job or remind them to run `/apply-ops scan` (or `/apply-ops-scan` if using OpenCode) periodically to check for new programs.
 
 ### Personalization
 

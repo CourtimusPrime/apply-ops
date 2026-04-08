@@ -1,5 +1,5 @@
 {
-  "name": "career-ops",
+  "name": "apply-ops",
   "version": "1.0.0",
   "description": "AI-powered job search pipeline built on Claude Code",
   "scripts": {
@@ -20,7 +20,7 @@
   "homepage": "https://santifer.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/santifer/career-ops"
+    "url": "https://github.com/santifer/apply-ops"
   },
   "license": "MIT",
   "dependencies": {

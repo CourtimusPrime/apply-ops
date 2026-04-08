@@ -1,8 +1,8 @@
-# PRD: Convert career-ops to a Masters Degree Application System
+# PRD: Convert apply-ops to a Masters Degree Application System
 
 ## Introduction
 
-career-ops is a mature AI job-search pipeline: it scans portals, evaluates job
+apply-ops is a mature AI job-search pipeline: it scans portals, evaluates job
 offers with structured scoring, generates tailored CVs, tracks applications, and
 assists with live application forms. This PRD covers the work needed to
 repurpose it for graduate school applications — specifically undergrad students

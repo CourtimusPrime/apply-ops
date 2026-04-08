@@ -1,11 +1,11 @@
 ---
-name: career-ops
+name: apply-ops
 description: AI job search command center -- evaluate offers, generate CVs, scan portals, track applications
 user_invocable: true
 args: mode
 ---
 
-# career-ops -- Router
+# apply-ops -- Router
 
 ## Mode Routing
 
@@ -39,24 +39,24 @@ If `{{mode}}` is not a sub-command AND doesn't look like a JD, show discovery.
 Show this menu:
 
 ```
-career-ops -- Command Center
+apply-ops -- Command Center
 
 Available commands:
-  /career-ops {JD}      → AUTO-PIPELINE: evaluate + report + PDF + tracker (paste text or URL)
-  /career-ops pipeline  → Process pending URLs from inbox (data/pipeline.md)
-  /career-ops oferta    → Evaluation only A-F (no auto PDF)
-  /career-ops ofertas   → Compare and rank multiple offers
-  /career-ops contacto  → LinkedIn power move: find contacts + draft message
-  /career-ops deep      → Deep research prompt about company
-  /career-ops pdf       → PDF only, ATS-optimized CV
-  /career-ops training  → Evaluate course/cert against North Star
-  /career-ops project   → Evaluate portfolio project idea
-  /career-ops tracker   → Application status overview
-  /career-ops apply     → Live application assistant (reads form + generates answers)
-  /career-ops scan      → Scan portals and discover new offers
-  /career-ops batch     → Batch processing with parallel workers
+  /apply-ops {JD}      → AUTO-PIPELINE: evaluate + report + PDF + tracker (paste text or URL)
+  /apply-ops pipeline  → Process pending URLs from inbox (data/pipeline.md)
+  /apply-ops oferta    → Evaluation only A-F (no auto PDF)
+  /apply-ops ofertas   → Compare and rank multiple offers
+  /apply-ops contacto  → LinkedIn power move: find contacts + draft message
+  /apply-ops deep      → Deep research prompt about company
+  /apply-ops pdf       → PDF only, ATS-optimized CV
+  /apply-ops training  → Evaluate course/cert against North Star
+  /apply-ops project   → Evaluate portfolio project idea
+  /apply-ops tracker   → Application status overview
+  /apply-ops apply     → Live application assistant (reads form + generates answers)
+  /apply-ops scan      → Scan portals and discover new offers
+  /apply-ops batch     → Batch processing with parallel workers
 
-Inbox: add URLs to data/pipeline.md → /career-ops pipeline
+Inbox: add URLs to data/pipeline.md → /apply-ops pipeline
 Or paste a JD directly to run the full pipeline.
 ```
 
@@ -83,7 +83,7 @@ For `scan`, `apply` (with Playwright), and `pipeline` (3+ URLs): launch as Agent
 Agent(
   subagent_type="general-purpose",
   prompt="[content of modes/_shared.md]\n\n[content of modes/{mode}.md]\n\n[invocation-specific data]",
-  description="career-ops {mode}"
+  description="apply-ops {mode}"
 )
 ```
 
