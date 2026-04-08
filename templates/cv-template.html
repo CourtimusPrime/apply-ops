@@ -283,6 +283,32 @@
     line-height: 1.5;
   }
 
+  /* === PUBLICATIONS === */
+  .publication {
+    margin-bottom: 14px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .pub-title {
+    font-weight: 600;
+    font-size: 11px;
+    color: #1a1a2e;
+  }
+
+  .pub-venue {
+    font-style: italic;
+    font-size: 10.5px;
+    color: #555;
+    margin-top: 2px;
+  }
+
+  .pub-meta {
+    font-size: 10px;
+    color: #777;
+    margin-top: 2px;
+  }
+
   /* === CERTIFICATIONS === */
   .cert-item {
     display: flex;
@@ -361,7 +387,7 @@
       <span class="separator">|</span>
       <a href="{{LINKEDIN_URL}}">{{LINKEDIN_DISPLAY}}</a>
       <span class="separator">|</span>
-      <a href="{{PORTFOLIO_URL}}">{{PORTFOLIO_DISPLAY}}</a>
+      <a href="{{GITHUB_URL}}">{{GITHUB_DISPLAY}}</a>
       <span class="separator">|</span>
       <span>{{LOCATION}}</span>
     </div>
@@ -373,24 +399,12 @@
     <div class="summary-text">{{SUMMARY_TEXT}}</div>
   </div>
 
-  <!-- CORE COMPETENCIES -->
+  <!-- RESEARCH INTERESTS -->
   <div class="section">
     <div class="section-title">{{SECTION_COMPETENCIES}}</div>
     <div class="competencies-grid">
       {{COMPETENCIES}}
     </div>
-  </div>
-
-  <!-- WORK EXPERIENCE -->
-  <div class="section">
-    <div class="section-title">{{SECTION_EXPERIENCE}}</div>
-    {{EXPERIENCE}}
-  </div>
-
-  <!-- PROJECTS -->
-  <div class="section avoid-break">
-    <div class="section-title">{{SECTION_PROJECTS}}</div>
-    {{PROJECTS}}
   </div>
 
   <!-- EDUCATION -->
@@ -399,7 +413,37 @@
     {{EDUCATION}}
   </div>
 
-  <!-- CERTIFICATIONS -->
+  <!-- RESEARCH EXPERIENCE -->
+  <div class="section">
+    <div class="section-title">{{SECTION_RESEARCH}}</div>
+    {{RESEARCH}}
+  </div>
+
+  <!-- WORK EXPERIENCE -->
+  <div class="section">
+    <div class="section-title">{{SECTION_EXPERIENCE}}</div>
+    {{EXPERIENCE}}
+  </div>
+
+  <!-- PUBLICATIONS -->
+  <div class="section">
+    <div class="section-title">{{SECTION_PUBLICATIONS}}</div>
+    {{PUBLICATIONS}}
+  </div>
+
+  <!-- RESEARCH PROJECTS -->
+  <div class="section avoid-break">
+    <div class="section-title">{{SECTION_PROJECTS}}</div>
+    {{PROJECTS}}
+  </div>
+
+  <!-- TEACHING & SERVICE -->
+  <div class="section avoid-break">
+    <div class="section-title">{{SECTION_TEACHING}}</div>
+    {{TEACHING}}
+  </div>
+
+  <!-- AWARDS & HONORS -->
   <div class="section avoid-break">
     <div class="section-title">{{SECTION_CERTIFICATIONS}}</div>
     {{CERTIFICATIONS}}
