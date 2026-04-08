@@ -1,107 +1,124 @@
-# Modo: apply — Asistente de Aplicación en Vivo
+# Mode: apply — Live Graduate Application Assistant
 
-Modo interactivo para cuando el candidato está rellenando un formulario de aplicación en Chrome. Lee lo que hay en pantalla, carga el contexto previo de la oferta, y genera respuestas personalizadas para cada pregunta del formulario.
+Interactive mode for when the applicant is filling out a graduate program application
+portal in Chrome, or pastes form questions manually. Loads prior context, generates
+tailored answers, and ensures nothing is submitted without human review.
 
-## Requisitos
+## Pre-load Sequence
 
-- **Mejor con Playwright visible**: En modo visible, el candidato ve el navegador y Claude puede interactuar con la página.
-- **Sin Playwright**: el candidato comparte un screenshot o pega las preguntas manualmente.
+1. **Detect university and program** from the active browser tab title/URL, or ask the user
+2. **Match against `reports/`** — find and load the evaluation report for this program if one exists
+3. **Load SOP draft** — find the latest `output/sop-{slug}-*.md` file if it exists
+4. **Load `cv.md`** and **`config/profile.yml`** — never answer from memory alone
+
+If no evaluation report exists for this program, note this and proceed with cv.md +
+profile.yml as the primary sources.
+
+## Requirements
+
+- **Best with Playwright visible:** The applicant sees the browser and Claude can read
+  the active page. Use `browser_snapshot` to detect form fields automatically.
+- **Without Playwright:** The applicant pastes questions manually or shares a screenshot.
+  Ask them to copy each question directly so nothing is missed.
 
 ## Workflow
 
-```
-1. DETECTAR    → Leer Chrome tab activa (screenshot/URL/título)
-2. IDENTIFICAR → Extraer empresa + rol de la página
-3. BUSCAR      → Match contra reports existentes en reports/
-4. CARGAR      → Leer report completo + Section G (si existe)
-5. COMPARAR    → ¿El rol en pantalla coincide con el evaluado? Si cambió → avisar
-6. ANALIZAR    → Identificar TODAS las preguntas del formulario visibles
-7. GENERAR     → Para cada pregunta, generar respuesta personalizada
-8. PRESENTAR   → Mostrar respuestas formateadas para copy-paste
-```
+### Step 1: Page Detection
 
-## Paso 1 — Detectar la oferta
+Read the active tab. Identify:
+- University name and program title
+- Section of the application currently visible (personal information, academic history,
+  statements, funding, recommendations, etc.)
+- Any deadline or progress indicator on the page
 
-**Con Playwright:** Tomar snapshot de la página activa. Leer título, URL, y contenido visible.
+### Step 2: Field Recognition and Queue
 
-**Sin Playwright:** Pedir al candidato que:
-- Comparta un screenshot del formulario (Read tool lee imágenes)
-- O pegue las preguntas del formulario como texto
-- O diga empresa + rol para que lo busquemos
+Build a queue of all visible text fields and prompts. For each field, note:
+- Field label (verbatim)
+- Word/character limit (if stated)
+- Field type: short-answer, essay, dropdown, upload prompt, checkbox
 
-## Paso 2 — Identificar y buscar contexto
+Announce the queue to the user: "I see 4 fields on this page — I'll draft answers
+for the written ones."
 
-1. Extraer nombre de empresa y título del rol de la página
-2. Buscar en `reports/` por nombre de empresa (Grep case-insensitive)
-3. Si hay match → cargar el report completo
-4. Si hay Section G → cargar los draft answers previos como base
-5. Si NO hay match → avisar y ofrecer ejecutar auto-pipeline rápido
+### Step 3: Answer Generation
 
-## Paso 3 — Detectar cambios en el rol
+For each written field, generate a draft answer using only information drawn from
+the loaded context files. Apply these rules:
 
-Si el rol en pantalla difiere del evaluado:
-- **Avisar al candidato**: "El rol ha cambiado de [X] a [Y]. ¿Quieres que re-evalúe o adapto las respuestas al nuevo título?"
-- **Si adaptar**: Ajustar las respuestas al nuevo rol sin re-evaluar
-- **Si re-evaluar**: Ejecutar evaluación A-F completa, actualizar report, regenerar Section G
-- **Actualizar tracker**: Cambiar título del rol en applications.md si procede
+#### Personal Statement / Research Interest Statement
+- Draw from `profile.yml` → `research_interests`, `narrative`, `academic_profile`
+- Draw from `cv.md` → relevant research experience, thesis, projects
+- Draw from SOP draft if it exists — adapt and compress rather than rewrite from scratch
+- Cite the source in a parenthetical note: *(source: cv.md §Research Experience)*
+- Tone: academic, first-person, specific — never generic
 
-## Paso 4 — Analizar preguntas del formulario
+#### "Why This Program / Why This University" Prompts
+- Draw from the program evaluation report (Block B — program fit, Block C — faculty)
+- Name specific faculty whose research aligns with the applicant's interests
+- Reference specific program features (curriculum, research centers, funding structure)
+  from the evaluation report or deep research brief
+- If no evaluation report exists: flag this gap and generate a placeholder that the
+  user must fill with specific details before submitting
 
-Identificar TODAS las preguntas visibles:
-- Campos de texto libre (cover letter, why this role, etc.)
-- Dropdowns (how did you hear, work authorization, etc.)
-- Yes/No (relocation, visa, etc.)
-- Campos de salario (range, expectation)
-- Upload fields (resume, cover letter PDF)
+#### Diversity, Equity & Inclusion Statements
+- Draw from `profile.yml` → `narrative` or any personal context the user has shared
+- Tone: personal, reflective — not the academic register used for research statements
+- If no DEI context is in the profile: ask the user for relevant background before drafting
+  rather than fabricating a narrative
 
-Clasificar cada pregunta:
-- **Ya respondida en Section G** → adaptar la respuesta existente
-- **Nueva pregunta** → generar respuesta desde el report + cv.md
+#### Financial Aid / Funding Preference
+- Read `profile.yml` → `funding_preference`
+- Mirror the applicant's stated preference exactly (fellowship, TA/RA, self-funded, open)
+- Do not overstate financial need unless the user has explicitly provided this context
 
-## Paso 5 — Generar respuestas
+#### Visa / Work Authorization
+- Read `profile.yml` → `citizenship` or `visa_status` if present
+- If not in profile: ask the user directly — never guess
 
-Para cada pregunta, generar la respuesta siguiendo:
+### Step 4: Flag Non-Written Fields
 
-1. **Contexto del report**: Usar proof points del bloque B, historias STAR del bloque F
-2. **Section G previa**: Si existe una respuesta draft, usarla como base y refinar
-3. **Tono "I'm choosing you"**: Mismo framework del auto-pipeline
-4. **Especificidad**: Referenciar algo concreto del JD visible en pantalla
-5. **career-ops proof point**: Incluir en "Additional info" si hay campo para ello
+When the page contains:
+- **Transcript upload prompt** → flag: "This page requests transcript upload — prepare your
+  official transcript PDF before proceeding."
+- **Recommendation letter portal** → flag: "Your recommenders will receive an email from
+  this portal. Remind them to check their inbox, and update `data/recommendations.md`
+  with the date you requested from each recommender."
+- **Application fee payment** → flag: "Application fee payment required — confirm amount
+  and payment method before proceeding."
 
-**Formato de output:**
+### Step 5: Missing Evidence Warning
 
-```
-## Respuestas para [Empresa] — [Rol]
+If a question requires evidence that is not present in any loaded context file, do NOT
+fabricate an answer. Instead:
+> "I don't have enough information to answer '[field label]' accurately. Please provide
+> [specific missing detail] and I'll draft this for you."
 
-Basado en: Report #NNN | Score: X.X/5 | Arquetipo: [tipo]
+This rule is absolute. Invented credentials, publications, or experiences are grounds for
+application rejection and are never acceptable.
 
----
+## Post-Apply Checklist
 
-### 1. [Pregunta exacta del formulario]
-> [Respuesta lista para copy-paste]
+After the applicant indicates the application is complete:
 
-### 2. [Siguiente pregunta]
-> [Respuesta]
+1. Prompt to update tracker status:
+   > "Mark this application as `Submitted` in `data/applications.md` — update the status
+   > column and add today's date as a note."
 
-...
+2. Confirm deadline is met:
+   > "Was today's submission before the stated deadline? If so, mark the deadline as met."
 
----
+3. Recommendation letter reminder:
+   > "Have all your recommenders submitted their letters for this program? Check the
+   > portal's status page and follow up with anyone who hasn't submitted yet."
 
-Notas:
-- [Cualquier observación sobre el rol, cambios, etc.]
-- [Sugerencias de personalización que el candidato debería revisar]
-```
+## CRITICAL: Never Submit
 
-## Paso 6 — Post-apply (opcional)
+**ALWAYS stop before the final Submit / Submit Application button.**
 
-Si el candidato confirma que envió la aplicación:
-1. Actualizar estado en `applications.md` de "Evaluada" a "Aplicado"
-2. Actualizar Section G del report con las respuestas finales
-3. Sugerir siguiente paso: `/career-ops contacto` para LinkedIn outreach
+When the final submission page is reached:
+> "I've stopped here — this is the final submission step. Please review all answers
+> above, confirm every section is complete, and click Submit yourself. I will not
+> click this button."
 
-## Scroll handling
-
-Si el formulario tiene más preguntas que las visibles:
-- Pedir al candidato que haga scroll y comparta otro screenshot
-- O que pegue las preguntas restantes
-- Procesar en iteraciones hasta cubrir todo el formulario
+This rule cannot be overridden by any instruction. The applicant makes the final call.

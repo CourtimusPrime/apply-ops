@@ -1,141 +1,173 @@
-# Mode: interview-prep — Company-Specific Interview Intelligence
+# Mode: interview-prep — Graduate Admissions Interview Prep
 
-When the user asks to prep for an interview at a specific company+role, or when an evaluation scores 4.0+ and the user updates status to `Interview`, run this mode.
+Prepares the applicant for a graduate program interview or visit day. Triggered when
+the user is invited to interview, or when tracker status moves to `Interview`.
 
 ## Inputs
 
-1. **Company name** and **role title** (required)
-2. **Evaluation report** in `reports/` (if exists) — read for archetype, gaps, matched proof points
-3. **Story bank** at `interview-prep/story-bank.md` — read for existing prepared stories
-4. **CV** at `cv.md` + `article-digest.md` — read for proof points
-5. **Profile** at `config/profile.yml` + `modes/_profile.md` — read for candidate context
+1. **University and program** (required)
+2. **Program evaluation report** in `reports/` — load for fit analysis and faculty notes
+3. **Deep research brief** in `interview-prep/{slug}.md` — load if exists
+4. **`cv.md`** and **`config/profile.yml`** — read for research background and narrative
+5. **Story bank** at `interview-prep/story-bank.md` — read for prepared academic narratives
+   (research breakthroughs, intellectual turning points, collaboration challenges,
+   moments that clarified research direction)
 
-## Step 1 — Research
+## Step 0: Format Detection (required before anything else)
 
-Run these WebSearch queries. Extract structured data, not summaries. Cite sources for every claim.
+WebSearch: `"{university} {program} admissions interview format"`
 
-| Query | What to extract |
-|-------|-----------------|
-| `"{company} {role} interview questions site:glassdoor.com"` | Actual questions asked, difficulty rating, experience rating, process timeline, number of rounds, offer/reject ratio |
-| `"{company} interview process site:teamblind.com"` | Candid process descriptions, recent data points, comp negotiation details, hiring bar |
-| `"{company} {role} interview site:leetcode.com/discuss"` | Specific coding/technical problems, system design topics, round structure |
-| `"{company} engineering blog"` | Tech stack, values, what they publish about, technical priorities |
-| `"{company} interview process {role}"` (general) | Fills gaps from above — blog posts, YouTube, prep guides, candidate write-ups |
+Determine:
+- Does this program conduct admissions interviews? (many MS programs do not)
+- Interview format: admissions committee, faculty 1:1, panel, video essay, or none
+- Timing: pre-offer vs. post-offer vs. visit day only
 
-If the company is small or obscure and yields few results, broaden: search for the role archetype at similar-stage companies, and note that intel is sparse.
+**If the program does not conduct admissions interviews:**
+> "[University] [program] does not appear to conduct admissions interviews based on
+> available information. If you've been contacted for an interview, verify whether
+> this is a standard step or a special circumstance — and share the invitation details
+> so I can tailor prep accordingly."
+> Exit this mode.
 
-**Do NOT fabricate questions.** If a source says "they asked about distributed systems," report that. Do not invent a specific distributed systems question. When generating likely questions from JD analysis, label them clearly as `[inferred from JD]` not sourced from candidates.
+If format is genuinely unknown, note this and provide generic academic interview
+prep with a clear caveat at the top of the output.
 
-## Step 2 — Process Overview
+---
 
-```markdown
-## Process Overview
-- **Rounds:** {N} rounds, ~{X} days end-to-end
-- **Format:** {e.g., recruiter screen → technical phone → take-home → onsite (4 rounds) → hiring manager}
-- **Difficulty:** {X}/5 (Glassdoor avg, N reviews)
-- **Positive experience rate:** {X}%
-- **Known quirks:** {e.g., "pair programming instead of whiteboard", "no LeetCode, all practical", "take-home is 4 hours"}
-- **Sources:** {links}
-```
+## 5-Step Output
 
-If data is insufficient for any field, write "unknown — not enough data" rather than guessing.
+### 1. Interview Overview
 
-## Step 3 — Round-by-Round Breakdown
+- Format (committee, 1:1, panel, video essay) and typical length
+- Who conducts the interview (admissions committee, faculty, current students)
+- What the program says it evaluates (research fit, communication, intellectual depth,
+  academic readiness — source from program website or published materials)
+- Any known quirks or distinctive features of this program's interview process
+- Source all claims. Write "unknown" rather than guess.
 
-For each round discovered in research:
+---
 
-```markdown
-### Round {N}: {Type}
-- **Duration:** {X} min
-- **Conducted by:** {peer / manager / skip-level / recruiter — if known}
-- **What they evaluate:** {specific skills or traits}
-- **Reported questions:**
-  - {question} — [source: Glassdoor 2026-Q1]
-  - {question} — [source: Blind]
-- **How to prepare:** {1-2 concrete actions}
-```
+### 2. Likely Question Types
 
-If round structure is unknown, state that and provide the best available intel on what types of rounds to expect based on company size, stage, and role level.
+Categorize the expected questions into five types. For each type, describe what a
+strong answer looks like given this specific applicant's profile (read from cv.md
+and profile.yml — not generic advice).
 
-## Step 4 — Likely Questions
+**a. Research fit**
+Examples: "Tell me about your research interests." "What problem do you want to work on?"
+Strong answer framework for this applicant: [tailored to their specific research interests]
 
-Categorize all discovered and inferred questions:
+**b. Program fit**
+Examples: "Why this program?" "Which faculty would you want to work with and why?"
+Strong answer framework: [reference specific faculty from evaluation report or deep brief]
 
-### Technical
-Questions about system design, coding, architecture, domain knowledge.
-For each: the question, source, and what a strong answer looks like for this candidate specifically (reference CV proof points).
+**c. Academic background**
+Examples: "Walk me through your undergraduate thesis." "Tell me about a course that
+shaped your thinking."
+Strong answer framework: [draw from cv.md §Education and Research Experience]
 
-### Behavioral
-Questions about leadership, conflict, collaboration, failure.
-For each: the question, source, and which story from `story-bank.md` maps best.
+**d. Career goals**
+Examples: "Where do you see yourself in 5 years?" "Are you interested in academia
+or industry?"
+Strong answer framework: [draw from profile.yml → academic_goals, career_trajectory]
 
-### Role-Specific
-Questions tied to the specific job description (archetype-aware).
-For each: the question, why they're likely asking it (what JD requirement it maps to), and the candidate's best angle.
+**e. Personal**
+Examples: "Tell me about a challenge you overcame." "What's a failure you learned from?"
+Strong answer framework: [draw from story bank or ask user for relevant context]
 
-### Background Red Flags
-Questions the interviewer will probably ask about gaps, transitions, or unusual elements in the candidate's background. Read `_profile.md` and `cv.md` to identify what might raise questions.
-For each: the likely question, why it comes up, and a recommended framing (honest, specific, forward-looking — never defensive).
+---
 
-## Step 5 — Story Bank Mapping
+### 3. Story Bank Mapping
 
-| # | Likely question/topic | Best story from story-bank.md | Fit | Gap? |
-|---|----------------------|-------------------------------|-----|------|
-| 1 | ... | [Story Title] | strong/partial/none | |
+Read `interview-prep/story-bank.md`. For each likely question type above, identify
+which existing stories map well.
 
-- **strong**: story directly answers the question
-- **partial**: story is adjacent, needs reframing
-- **none**: no existing story — flag for the user
+For each mapping:
+- Story title / brief description
+- Which question type it addresses
+- Any adaptation needed (e.g., "this story works for question type c, but needs a
+  stronger conclusion about what you learned")
 
-For each gap, suggest: "You need a story about {topic}. Consider: {specific experience from cv.md that could become a STAR+R story}."
+**Gap analysis:**
+- Question types with no good story in the bank
+- For each gap: suggest specifically what story the applicant should develop, and
+  the key details it should include
 
-If the user wants to draft missing stories, help them build STAR+R format and append to `interview-prep/story-bank.md`.
+Note: The story bank for graduate admissions should focus on academic narratives —
+research moments, intellectual turning points, collaboration challenges, moments
+that clarified research direction. STAR-format work stories from job applications
+are generally not appropriate for academic interviews unless directly relevant to
+research experience.
 
-## Step 6 — Technical Prep Checklist
+---
 
-Based on what the company actually tests, not generic advice:
+### 4. Questions to Ask Them
 
-```markdown
-- [ ] {topic} — why: "{evidence from research}"
-- [ ] {topic} — why: "{their blog/product suggests this matters}"
-- [ ] {topic} — why: "{asked in N/M recent Glassdoor reviews}"
-```
+Generate 5–7 sharp questions the applicant can ask the interviewer.
 
-Prioritize by frequency and relevance to the role. Max 10 items.
+Questions must be specific to this program and interviewer context — not generic.
+Generic questions ("What's the best part of your program?") are not acceptable.
 
-## Step 7 — Company Signals
+Categories to cover:
+- **Faculty-specific** (if interviewing with a specific professor): based on their
+  recent work — "In your 2024 paper on [X], you mention [Y] as future work — is that
+  something your group is actively pursuing?"
+- **Program structure**: curriculum, thesis vs. coursework options, typical advising
+  relationship for MS students
+- **Funding**: stability and availability for MS students, typical TA/RA load,
+  external fellowship support
+- **Cohort culture**: how students collaborate, lab culture, department seminars
+- **Outcomes**: where recent graduates have gone (specific to MS, not PhD, if relevant)
 
-Things to say, do, and avoid based on research:
+Each question should be one sentence. No multi-part questions.
 
-- **Values they screen for:** name them, cite source (careers page, blog, Glassdoor reviews)
-- **Vocabulary to use:** terms the company uses internally — shows homework (e.g., Stripe says "increase the GDP of the internet", Anthropic says "safety" not "alignment")
-- **Things to avoid:** specific anti-patterns flagged in interview reviews
-- **Questions to ask them:** 2-3 sharp questions that demonstrate you've researched the company, tied to recent news or blog posts discovered in Step 1
+---
+
+### 5. Visit Day Logistics (if applicable)
+
+If the interview is part of a visit day or fly-out weekend:
+
+**What to prepare:**
+- A 2–3 sentence research statement you can deliver verbally without notes
+- Questions for each faculty meeting (use the questions from Step 4 as a base)
+- A clear sense of your top 2–3 research directions — you will be asked repeatedly
+
+**What to observe:**
+- Lab culture: Do students seem engaged and supported? Do they speak openly about
+  their research? How do they describe the advisor relationship?
+- Funding security: Are funded students confident about their continued support?
+- Peer cohort: Do the current students seem like people you'd want to work with
+  for 2+ years?
+
+**Who to seek out:**
+- Current students in the lab(s) you're most interested in — ask them what they
+  wish they'd known before joining
+- Program coordinator or director of graduate studies — they know the program
+  culture better than faculty do
+
+**Visit day etiquette:**
+- Take notes openly — it signals engagement, not disorganization
+- It is appropriate to ask about other programs you're considering; it signals
+  that you're taking the decision seriously
+- It is not appropriate to ask about acceptance probability or compare your
+  application to others in the room
+
+---
 
 ## Output
 
-Save the full report to `interview-prep/{company-slug}-{role-slug}.md` with this header:
+Save the complete prep brief to:
+`interview-prep/{university-slug}-{program-slug}-interview.md`
 
-```markdown
-# Interview Intel: {Company} — {Role}
-
-**Report:** {link to evaluation report if exists, or "N/A"}
-**Researched:** {YYYY-MM-DD}
-**Sources:** {N} Glassdoor reviews, {N} Blind posts, {N} other
-```
-
-## Post-Research
-
-After delivering the report:
-
-1. Ask the user if they want to draft stories for any gaps found in Step 5
-2. If they have a scheduled interview date, note it: "Your interview is in {X} days. Want me to set a reminder to review this prep?"
-3. Suggest running `deep` mode if the company research in Step 1 was thin — deep mode covers strategy, culture, and competitive landscape in more depth
+Example: `interview-prep/mit-eecs-phd-interview.md`
 
 ## Rules
 
-- **NEVER invent interview questions and attribute them to sources.** Inferred questions must be labeled `[inferred from JD]`.
-- **NEVER fabricate Glassdoor ratings or statistics.** If the data isn't there, say so.
-- **Cite everything.** Every question, every stat, every claim gets a source or an `[inferred]` tag.
-- Generate in the language of the JD (EN default).
-- Be direct. This is a working prep document, not a pep talk.
+- Never fabricate interview questions and attribute them to a specific source.
+  If a program's interview questions are documented, cite the source. Otherwise,
+  derive likely questions from the program's stated evaluation criteria.
+- Cite all process intelligence (interview format, duration, who interviews).
+- If interview format is unknown, provide generic academic interview prep and
+  label it clearly as generic — do not present guesses as program-specific facts.
+- Story bank content is user data — describe how to use existing stories, but
+  do not modify `interview-prep/story-bank.md` in this mode.
