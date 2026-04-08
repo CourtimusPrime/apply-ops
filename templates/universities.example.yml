@@ -1,0 +1,96 @@
+# University Program Scanner Configuration
+# Copy to universities.yml in the project root and customize.
+#
+# Strategy:
+#   1. Playwright → tracked program URLs (real-time, reliable)
+#   2. WebSearch queries → discover new programs in target field
+#
+# HOW TO CUSTOMIZE:
+#   1. Copy to universities.yml
+#   2. Edit field_filter.positive with YOUR target fields
+#   3. Add programs you're actively tracking to tracked_programs
+#   4. Add WebSearch queries for discovery to search_queries
+
+# -- Field filter --
+# Applied to program titles found via WebSearch.
+# At least 1 positive must match AND 0 negatives must match (case-insensitive).
+# Not applied to tracked_programs (those are already vetted).
+
+field_filter:
+  positive:
+    - "Computer Science"
+    - "Machine Learning"
+    - "Artificial Intelligence"
+    - "Data Science"
+    - "Information Systems"
+    - "Software Engineering"
+    - "Human-Computer Interaction"
+    - "Computational"
+  negative:
+    - "Executive"
+    - "MBA"
+    - "Undergraduate"
+    - "Certificate"
+    - "PhD"          # exclude if only targeting MS
+
+# -- Search queries --
+# Each triggers a WebSearch for program discovery.
+# Results are filtered, deduped, and deadline-checked before adding to pipeline.
+
+search_queries:
+  - name: MS CS — Top programs
+    query: '"master of science" "computer science" application deadline 2026 OR 2027 site:cs.stanford.edu OR site:eecs.mit.edu OR site:cs.cmu.edu'
+    enabled: true
+
+  - name: MS AI — Programs
+    query: '"master" "artificial intelligence" application deadline 2026 OR 2027'
+    enabled: true
+
+  - name: MS Data Science — Programs
+    query: '"master of science" "data science" application deadline 2026 OR 2027'
+    enabled: true
+
+# -- Tracked programs --
+# Programs whose pages are checked directly with Playwright.
+# These are programs already in your target list.
+#
+# Fields:
+#   university:   Short university name (used in tracker)
+#   program:      Degree + field (e.g., "MSc Computer Science")
+#   department:   Department/school name (optional)
+#   url:          Program application info or admissions page
+#   deadline:     Known deadline (YYYY-MM-DD), "rolling", or "TBD"
+#   portal_type:  Application portal (ApplyTexas, Slate, ApplyWeb, custom, unknown)
+#   enabled:      true/false
+#   notes:        Any context (e.g., GRE required, rolling admissions, cohort size)
+
+tracked_programs:
+
+  # -- Example entries (replace with your actual target list) --
+
+  - university: MIT
+    program: MSc Computer Science
+    department: EECS
+    url: https://www.eecs.mit.edu/academics/graduate-programs/admission-process/
+    deadline: TBD
+    portal_type: custom
+    enabled: true
+    notes: "No GRE required. Research-track. Advisor match critical."
+
+  - university: Stanford
+    program: MSc Computer Science
+    department: School of Engineering
+    url: https://gradadmissions.stanford.edu/programs/ms-computer-science
+    deadline: TBD
+    portal_type: Slate
+    enabled: true
+    notes: "Breadth + depth curriculum. Strong ML faculty."
+
+  - university: CMU
+    program: MCDS — Master of Computational Data Science
+    department: School of Computer Science
+    url: https://mcds.cs.cmu.edu/apply
+    deadline: TBD
+    portal_type: custom
+    enabled: true
+    notes: "Highly structured professional MS. Strong industry placement."
