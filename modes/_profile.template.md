@@ -1,102 +1,105 @@
-# User Profile Context -- career-ops
+# User Profile Context -- masters-ops
 
 <!-- ============================================================
      THIS FILE IS YOURS. It will NEVER be auto-updated.
-     
-     Customize everything here: your archetypes, narrative,
-     proof points, negotiation scripts, location policy.
-     
+
+     Customize everything here: your program-type archetypes,
+     academic narrative, application strategy, funding targets,
+     and location policy.
+
      The system reads _shared.md (updatable) first, then this
      file (your overrides). Your customizations always win.
      ============================================================ -->
 
-## Your Target Roles
+## Your Target Programs
 
-<!-- Replace these with YOUR target roles. Examples:
-     - Senior Backend Engineer / Staff Platform Engineer
-     - AI Product Manager / Technical PM
-     - Data Engineer / ML Engineer
-     - DevOps / SRE / Platform
+<!-- Replace these with YOUR target program types. Examples:
+     - Research-track MS (thesis-focused, path to PhD)
+     - Professional MS (coursework-heavy, industry entry)
+     - Interdisciplinary MS (cross-department, applied focus)
+     - Conversion degree (entering a new field)
+     - Part-time / Online MS (alongside work)
      Whatever you're optimizing for. -->
 
-| Archetype | Thematic axes | What they buy |
-|-----------|---------------|---------------|
-| **AI Platform / LLMOps Engineer** | Evaluation, observability, reliability, pipelines | Someone who puts AI in production with metrics |
-| **Agentic Workflows / Automation** | HITL, tooling, orchestration, multi-agent | Someone who builds reliable agent systems |
-| **Technical AI Product Manager** | GenAI/Agents, PRDs, discovery, delivery | Someone who translates business to AI product |
-| **AI Solutions Architect** | Hyperautomation, enterprise, integrations | Someone who designs end-to-end AI architectures |
-| **AI Forward Deployed Engineer** | Client-facing, fast delivery, prototyping | Someone who delivers AI solutions to clients fast |
-| **AI Transformation Lead** | Change management, adoption, org enablement | Someone who leads AI transformation in an org |
+| Program Type | Thematic axes | What they value in applicants |
+|--------------|---------------|-------------------------------|
+| **Research-track MS** | Thesis, faculty mentorship, lab fit, publication potential | Someone with research experience, clear intellectual curiosity, and a faculty match |
+| **Professional MS** | Coursework, industry projects, career services, alumni network | Someone with practical skills, clear career goals, and industry-relevant experience |
+| **Interdisciplinary MS** | Applied problems, cross-department collaboration, real-world impact | Someone who bridges domains and frames research around concrete outcomes |
+| **Conversion degree** | Foundations, academic potential, motivation to switch fields | Someone with strong fundamentals in adjacent areas and a compelling story for the pivot |
+| **Part-time / Online MS** | Flexibility, self-direction, professional experience | Someone with work experience who can articulate why they need the credential now |
 
 ## Your Adaptive Framing
 
-<!-- Map YOUR projects to each archetype. Example:
-     | Platform / LLMOps | My monitoring dashboard project | article-digest.md |
-     | Agentic | My chatbot with HITL escalation | cv.md section 3 | -->
+<!-- Map YOUR projects and strengths to each program type. Example:
+     | Research-track | My NLP lab work + publication | cv.md + article-digest.md |
+     | Professional   | My production ML system       | cv.md section 3           | -->
 
-| If the role is... | Emphasize about you... | Proof point sources |
-|-------------------|------------------------|---------------------|
-| Platform / LLMOps | Production systems builder, observability, evals | article-digest.md + cv.md |
-| Agentic / Automation | Multi-agent orchestration, HITL, reliability | article-digest.md + cv.md |
-| Technical AI PM | Product discovery, PRDs, metrics | cv.md + article-digest.md |
-| Solutions Architect | System design, integrations, enterprise-ready | article-digest.md + cv.md |
-| Forward Deployed Engineer | Fast delivery, client-facing, prototype to prod | cv.md + article-digest.md |
-| AI Transformation Lead | Change management, team enablement, adoption | cv.md + article-digest.md |
+| If the program is... | Emphasize about you... | Proof point sources |
+|----------------------|------------------------|---------------------|
+| Research-track MS | Research experience, faculty alignment, thesis topic idea | article-digest.md + cv.md |
+| Professional MS | Production systems, industry impact, career trajectory | cv.md + article-digest.md |
+| Interdisciplinary MS | Cross-domain thinking, applied outcomes, collaboration | article-digest.md + cv.md |
+| Conversion degree | Adjacent foundations, learning velocity, compelling pivot story | cv.md + article-digest.md |
+| Part-time / Online MS | Work experience, professional goals, self-direction | cv.md + article-digest.md |
 
-## Your Exit Narrative
+## Your Academic Narrative
 
-<!-- Replace with YOUR story. This frames everything. -->
+<!-- Replace with YOUR story. This frames everything in SOPs and cover emails. -->
 
-Use the candidate's exit story from `config/profile.yml` to frame ALL content:
-- **In PDF Summaries:** Bridge from past to future
-- **In STAR stories:** Reference proof points from article-digest.md
-- **In Draft Answers:** The transition narrative appears in the first response
+Use the candidate's academic story from `config/profile.yml` to frame ALL content:
+- **In SOP drafts:** Open with intellectual journey, not just credentials
+- **In research statements:** Bridge past projects to proposed thesis direction
+- **In email outreach to faculty:** Lead with specific alignment to their work, then your background
 
-## Your Cross-cutting Advantage
+## Your Cross-cutting Strength
 
-<!-- What's your "signature move"? What do you do that others can't? -->
+<!-- What's your "signature move"? What research angle or skill do you have that others lack? -->
 
-Frame profile as **"Technical builder with real-world proof"** that adapts framing to the role.
+Frame profile as **"[Your unique combo]"** that adapts emphasis to program type.
 
-## Your Portfolio / Demo
+## Your Portfolio / Research Page
 
-<!-- If you have a live demo, dashboard, or public project:
-     url: https://yoursite.dev/demo
-     password: demo-2026
-     when_to_share: "LLMOps, AI Platform roles" -->
+<!-- If you have a research page, GitHub, or demo:
+     url: https://yoursite.dev/research
+     when_to_share: "Research-track MS applications, faculty cold emails" -->
 
-If you have a live demo/dashboard (check profile.yml), offer access in applications for relevant roles.
+If you have a portfolio or research page (check profile.yml), link it in SOP footers and faculty emails for relevant program types.
 
-## Your Comp Targets
+## Your Funding Targets
 
-<!-- Research comp ranges for YOUR target roles -->
+<!-- Research funding ranges for YOUR target programs and fields -->
 
 **General guidance:**
-- Use WebSearch for current market data (Glassdoor, Levels.fyi, Blind)
-- Frame by role title, not by skills
-- Contractor rates are typically 30-50% higher than employee base
+- Use WebSearch for current funding data (program websites, PhD Stipends, GradCafe)
+- Frame funding by program type and field, not just rankings
+- Research assistantships (RA) often pay more than TAs but depend on faculty grants
+- Fellowship deadlines often precede admission deadlines — flag these early
 
-## Your Negotiation Scripts
+**From profile.yml:** Use `funding.target` and `funding.annual_cost_ceiling` to flag programs
+that would require self-funding above the ceiling as a cost dimension in evaluations.
 
-<!-- Adapt to YOUR situation, currency, location -->
+## Your Application Strategy
 
-**Salary expectations:**
-> "Based on market data for this role, I'm targeting [RANGE from profile.yml]. I'm flexible on structure -- what matters is the total package and the opportunity."
+<!-- Adapt to YOUR situation: timeline, reach/target/safety split, geographic constraints -->
 
-**Geographic discount pushback:**
-> "The roles I'm competitive for are output-based, not location-based. My track record doesn't change based on postal code."
+**Communicating funding needs:**
+> "I'm targeting funded positions (fellowship, TA, or RA). I'm happy to discuss how I can contribute to the lab — teaching and research assistance are both areas I'm interested in."
 
-**When offered below target:**
-> "I'm comparing with opportunities in the [higher range]. I'm drawn to [company] because of [reason]. Can we explore [target]?"
+**When asked about fit with an unfunded program:**
+> "I'm drawn to [program] because of [specific reason]. I'm actively exploring all funding options including external fellowships — can you tell me more about what's typically available to incoming students?"
+
+**When following up after a long wait:**
+> "I wanted to check in on my application status. I remain very interested in [program] and would love to connect if there's an opportunity to speak with faculty or current students."
 
 ## Your Location Policy
 
 <!-- Adapt to YOUR situation -->
 
-**In forms:**
+**In application forms:**
 - Follow your actual availability from profile.yml
-- Specify timezone overlap in free-text fields
+- Specify relocation willingness in free-text fields
 
 **In evaluations (scoring):**
-- Remote dimension for hybrid outside your country: score **3.0** (not 1.0)
-- Only score 1.0 if JD says "must be on-site 4-5 days/week, no exceptions"
+- Remote/hybrid MS programs: score based on your `location.remote_ok` preference from profile.yml
+- Only score low if program requires full on-site attendance you cannot accommodate

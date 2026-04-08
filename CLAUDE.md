@@ -89,64 +89,65 @@ When using [OpenCode](https://opencode.ai), the following slash commands are ava
 1. Does `cv.md` exist?
 2. Does `config/profile.yml` exist (not just profile.example.yml)?
 3. Does `modes/_profile.md` exist (not just _profile.template.md)?
-4. Does `portals.yml` exist (not just templates/portals.example.yml)?
+4. Does `universities.yml` OR `portals.yml` exist?
 
 If `modes/_profile.md` is missing, copy from `modes/_profile.template.md` silently. This is the user's customization file — it will never be overwritten by updates.
 
 **If ANY of these is missing, enter onboarding mode.** Do NOT proceed with evaluations, scans, or any other mode until the basics are in place. Guide the user step by step:
 
-#### Step 1: CV (required)
+#### Step 1: Academic CV (required)
 If `cv.md` is missing, ask:
-> "I don't have your CV yet. You can either:
-> 1. Paste your CV here and I'll convert it to markdown
-> 2. Paste your LinkedIn URL and I'll extract the key info
-> 3. Tell me about your experience and I'll draft a CV for you
+> "I don't have your academic CV yet. You can either:
+> 1. Paste your CV or resume here and I'll convert it to markdown
+> 2. Tell me about your education and experience and I'll draft one for you
+> 3. Paste your LinkedIn URL and I'll extract the key info
 >
 > Which do you prefer?"
 
-Create `cv.md` from whatever they provide. Make it clean markdown with standard sections (Summary, Experience, Projects, Education, Skills).
+Create `cv.md` from whatever they provide. Academic CV sections should be ordered: Education first, then Research Experience, Publications (if any), Projects, Work Experience, Skills. If the user only has a job-search resume, restructure it into academic CV format — education and research move to the top.
 
 #### Step 2: Profile (required)
 If `config/profile.yml` is missing, copy from `config/profile.example.yml` and then ask:
 > "I need a few details to personalize the system:
-> - Your full name and email
-> - Your location and timezone
-> - What roles are you targeting? (e.g., 'Senior Backend Engineer', 'AI Product Manager')
-> - Your salary target range
+> - Your full name, email, and location
+> - Your undergraduate institution, field, GPA, and graduation year
+> - Your GRE scores (if you've taken it — it's okay if not)
+> - What degree type and field are you targeting? (e.g., 'MSc Computer Science — research track', 'MEng AI')
+> - Your top research interests (2–4 topics)
 >
 > I'll set everything up for you."
 
-Fill in `config/profile.yml` with their answers. For archetypes, map their target roles to the closest matches and update `modes/_shared.md` if needed.
+Fill in `config/profile.yml` with their answers. Map their target programs to the closest program-type archetypes in `modes/_profile.md`. Ask about funding preference (fellowship, TA/RA, self-funded, or open).
 
-#### Step 3: Portals (recommended)
-If `portals.yml` is missing:
-> "I'll set up the job scanner with 45+ pre-configured companies. Want me to customize the search keywords for your target roles?"
+#### Step 3: Universities (recommended)
+If neither `universities.yml` nor `portals.yml` exists:
+> "I'll set up the university scanner once the universities list is ready. For now, you can paste individual program URLs to evaluate them, or we can build your target list together."
 
-Copy `templates/portals.example.yml` → `portals.yml`. If they gave target roles in Step 2, update `title_filter.positive` to match.
+Note: `templates/universities.example.yml` will be available in a future update (US-008). Skip this step silently if the template doesn't exist yet — do not block onboarding.
 
 #### Step 4: Tracker
 If `data/applications.md` doesn't exist, create it:
 ```markdown
 # Applications Tracker
 
-| # | Date | Company | Role | Score | Status | PDF | Report | Notes |
-|---|------|---------|------|-------|--------|-----|--------|-------|
+| # | Date | University | Program | Score | Deadline | Status | PDF | Report | Notes |
+|---|------|------------|---------|-------|----------|--------|-----|--------|-------|
 ```
 
-#### Step 5: Get to know the user (important for quality)
+#### Step 5: Get to know the applicant (important for quality)
 
-After the basics are set up, proactively ask for more context. The more you know, the better your evaluations will be:
+After the basics are set up, proactively ask for more context. The more you know, the better your evaluations and SOP drafts will be:
 
 > "The basics are ready. But the system works much better when it knows you well. Can you tell me more about:
-> - What makes you unique? What's your 'superpower' that other candidates don't have?
-> - What kind of work excites you? What drains you?
-> - Any deal-breakers? (e.g., no on-site, no startups under 20 people, no Java shops)
-> - Your best professional achievement — the one you'd lead with in an interview
-> - Any projects, articles, or case studies you've published?
+> - What research problems genuinely excite you? What keeps you up at night intellectually?
+> - Are you aiming for academia long-term, or do you want an MS as a stepping stone to industry research?
+> - Your dream programs — the ones you'd be thrilled to get into, even if they feel like a reach
+> - Any context behind your GPA or test scores (upward trend, difficult semester, non-traditional path)?
+> - Any special circumstances — gap years, career pivots, unusual experiences that make your application interesting?
 >
-> The more context you give me, the better I filter. Think of it as onboarding a recruiter — the first week I need to learn about you, then I become invaluable."
+> The more context you give me, the better I can tailor your SOPs and evaluate program fit. Think of it as onboarding an advisor — the first conversation shapes everything that follows."
 
-Store any insights the user shares in `config/profile.yml` (under narrative) or in `article-digest.md` if they share proof points. Update `modes/_shared.md` archetypes and framing if what they describe doesn't match the defaults.
+Store insights in `config/profile.yml` (under `narrative` or `academic_profile`) or in `article-digest.md` if they share proof points. Update program-type archetypes and framing in `modes/_profile.md` if what they describe doesn't match the defaults.
 
 **After every evaluation, learn.** If the user says "this score is too high, I wouldn't apply here" or "you missed that I have experience in X", update your understanding. Adjust the framing in `_shared.md` or add notes to `profile.yml`. The system should get smarter with every interaction.
 
