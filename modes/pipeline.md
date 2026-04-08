@@ -1,57 +1,57 @@
-# Modo: pipeline — Inbox de URLs (Second Brain)
+# Mode: pipeline — URL Inbox
 
-Procesa URLs de ofertas acumuladas en `data/pipeline.md`. El usuario agrega URLs cuando quiera y luego ejecuta `/career-ops pipeline` para procesarlas todas.
+Processes program URLs accumulated in `data/pipeline.md`. The user adds URLs at any time and then runs `/career-ops pipeline` to process them all.
 
 ## Workflow
 
-1. **Leer** `data/pipeline.md` → buscar items `- [ ]` en la sección "Pendientes"
-2. **Para cada URL pendiente**:
-   a. Calcular siguiente `REPORT_NUM` secuencial (leer `reports/`, tomar el número más alto + 1)
-   b. **Extraer JD** usando Playwright (browser_navigate + browser_snapshot) → WebFetch → WebSearch
-   c. Si la URL no es accesible → marcar como `- [!]` con nota y continuar
-   d. **Ejecutar auto-pipeline completo**: Evaluación A-F → Report .md → PDF (si score >= 3.0) → Tracker
-   e. **Mover de "Pendientes" a "Procesadas"**: `- [x] #NNN | URL | Empresa | Rol | Score/5 | PDF ✅/❌`
-3. **Si hay 3+ URLs pendientes**, lanzar agentes en paralelo (Agent tool con `run_in_background`) para maximizar velocidad.
-4. **Al terminar**, mostrar tabla resumen:
+1. **Read** `data/pipeline.md` → find `- [ ]` items in the "Pending" section.
+2. **For each pending URL:**
+   a. Calculate the next sequential `REPORT_NUM` (read `reports/`, take the highest number + 1).
+   b. **Extract program description** using Playwright (`browser_navigate` + `browser_snapshot`) → WebFetch → WebSearch.
+   c. If the URL is not accessible → mark as `- [!]` with a note and continue.
+   d. **Run the full auto-pipeline:** Evaluation A–F → Report .md → PDF (if score ≥ 3.0) → Tracker.
+   e. **Move from "Pending" to "Processed":** `- [x] #NNN | URL | University | Program | Score/5 | PDF ✅/❌`
+3. **If there are 3+ pending URLs**, launch agents in parallel (Agent tool with `run_in_background`) to maximize throughput.
+4. **When done**, display a summary table:
 
 ```
-| # | Empresa | Rol | Score | PDF | Acción recomendada |
+| # | University | Program | Score | PDF | Action |
 ```
 
-## Formato de pipeline.md
+## Format of pipeline.md
 
 ```markdown
-## Pendientes
-- [ ] https://jobs.example.com/posting/123
-- [ ] https://boards.greenhouse.io/company/jobs/456 | Company Inc | Senior PM
-- [!] https://private.url/job — Error: login required
+## Pending
+- [ ] https://apply.mit.edu/programs/ms-cs
+- [ ] https://grad.stanford.edu/apply/cs-ms | Stanford | MS Computer Science
+- [!] https://private.portal/apply — Error: login required
 
-## Procesadas
-- [x] #143 | https://jobs.example.com/posting/789 | Acme Corp | AI PM | 4.2/5 | PDF ✅
-- [x] #144 | https://boards.greenhouse.io/xyz/jobs/012 | BigCo | SA | 2.1/5 | PDF ❌
+## Processed
+- [x] #143 | https://apply.mit.edu/programs/ms-cs | MIT | MS CS | 4.2/5 | PDF ✅
+- [x] #144 | https://grad.stanford.edu/apply/cs-ms | Stanford | MS CS | 3.8/5 | PDF ✅
 ```
 
-## Detección inteligente de JD desde URL
+## Program Description Extraction
 
-1. **Playwright (preferido):** `browser_navigate` + `browser_snapshot`. Funciona con todas las SPAs.
-2. **WebFetch (fallback):** Para páginas estáticas o cuando Playwright no está disponible.
-3. **WebSearch (último recurso):** Buscar en portales secundarios que indexan el JD.
+1. **Playwright (preferred):** `browser_navigate` + `browser_snapshot`. Works with all SPAs.
+2. **WebFetch (fallback):** For static pages or when Playwright is unavailable.
+3. **WebSearch (last resort):** Search for program on secondary aggregator sites.
 
-**Casos especiales:**
-- **LinkedIn**: Puede requerir login → marcar `[!]` y pedir al usuario que pegue el texto
-- **PDF**: Si la URL apunta a un PDF, leerlo directamente con Read tool
-- **`local:` prefix**: Leer el archivo local. Ejemplo: `local:jds/linkedin-pm-ai.md` → leer `jds/linkedin-pm-ai.md`
+**Special cases:**
+- **Login-gated portals** (Slate, ApplyTexas): mark `[!]` and ask the user to paste the description.
+- **PDF links:** Read directly with the Read tool.
+- **`local:` prefix:** Read the local file. Example: `local:programs/mit-ms-cs.md` → read `programs/mit-ms-cs.md`.
 
-## Numeración automática
+## Automatic Numbering
 
-1. Listar todos los archivos en `reports/`
-2. Extraer el número del prefijo (e.g., `142-medispend...` → 142)
-3. Nuevo número = máximo encontrado + 1
+1. List all files in `reports/`.
+2. Extract the number prefix (e.g., `142-mit-ms-cs-2026-04-08.md` → 142).
+3. New number = highest found + 1.
 
-## Sincronización de fuentes
+## Source Sync Check
 
-Antes de procesar cualquier URL, verificar sync:
+Before processing any URL, verify sync:
 ```bash
 node cv-sync-check.mjs
 ```
-Si hay desincronización, advertir al usuario antes de continuar.
+If there is a desync, warn the user before continuing.

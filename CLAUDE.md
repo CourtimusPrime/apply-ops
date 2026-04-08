@@ -15,6 +15,7 @@ There are two layers. Read `DATA_CONTRACT.md` for the full list.
 **User Layer (NEVER auto-updated, personalization goes HERE):**
 - `cv.md`, `config/profile.yml`, `modes/_profile.md`, `article-digest.md`, `portals.yml`
 - `data/*`, `reports/*`, `output/*`, `interview-prep/*`
+- `data/recommendations.md`
 
 **System Layer (auto-updatable, DON'T put user data here):**
 - `modes/_shared.md`, `modes/oferta.md`, all other modes
@@ -43,16 +44,17 @@ To rollback: `node update-system.mjs rollback`
 
 ## What is career-ops
 
-AI-powered job search automation built on Claude Code: pipeline tracking, offer evaluation, CV generation, portal scanning, batch processing.
+AI graduate application automation built on Claude Code: pipeline tracking, program evaluation, academic CV generation, university scanning, batch processing.
 
 ### Main Files
 
 | File | Function |
 |------|----------|
 | `data/applications.md` | Application tracker |
-| `data/pipeline.md` | Inbox of pending URLs |
+| `data/pipeline.md` | Inbox of pending program URLs |
 | `data/scan-history.tsv` | Scanner dedup history |
-| `portals.yml` | Query and company config |
+| `universities.yml` | University and program config |
+| `data/recommendations.md` | Recommendation letter tracker |
 | `templates/cv-template.html` | HTML template for CVs |
 | `generate-pdf.mjs` | Playwright: HTML to PDF |
 | `article-digest.md` | Compact proof points from portfolio (optional) |
@@ -66,18 +68,18 @@ When using [OpenCode](https://opencode.ai), the following slash commands are ava
 
 | Command | Claude Code Equivalent | Description |
 |---------|------------------------|-------------|
-| `/career-ops` | `/career-ops` | Show menu or evaluate JD with args |
-| `/career-ops-pipeline` | `/career-ops pipeline` | Process pending URLs from inbox |
-| `/career-ops-evaluate` | `/career-ops oferta` | Evaluate job offer (A-F scoring) |
-| `/career-ops-compare` | `/career-ops ofertas` | Compare and rank multiple offers |
-| `/career-ops-contact` | `/career-ops contacto` | LinkedIn outreach (find contacts + draft) |
-| `/career-ops-deep` | `/career-ops deep` | Deep company research |
-| `/career-ops-pdf` | `/career-ops pdf` | Generate ATS-optimized CV |
+| `/career-ops` | `/career-ops` | Show menu or evaluate program with args |
+| `/career-ops-pipeline` | `/career-ops pipeline` | Process pending program URLs from inbox |
+| `/career-ops-evaluate` | `/career-ops oferta` | Evaluate program (A-F scoring) |
+| `/career-ops-compare` | `/career-ops ofertas` | Compare and rank multiple programs |
+| `/career-ops-contact` | `/career-ops contacto` | Professor cold email (find faculty + draft) |
+| `/career-ops-deep` | `/career-ops deep` | Deep program + faculty research |
+| `/career-ops-pdf` | `/career-ops pdf` | Generate ATS-optimized academic CV |
 | `/career-ops-training` | `/career-ops training` | Evaluate course/cert against goals |
 | `/career-ops-project` | `/career-ops project` | Evaluate portfolio project idea |
 | `/career-ops-tracker` | `/career-ops tracker` | Application status overview |
 | `/career-ops-apply` | `/career-ops apply` | Live application assistant |
-| `/career-ops-scan` | `/career-ops scan` | Scan portals for new offers |
+| `/career-ops-scan` | `/career-ops scan` | Scan universities for new programs |
 | `/career-ops-batch` | `/career-ops batch` | Batch processing with parallel workers |
 
 **Note:** OpenCode commands invoke the same `.claude/skills/career-ops/SKILL.md` skill used by Claude Code. The `modes/*` files are shared between both platforms.
@@ -154,27 +156,27 @@ Store insights in `config/profile.yml` (under `narrative` or `academic_profile`)
 #### Step 6: Ready
 Once all files exist, confirm:
 > "You're all set! You can now:
-> - Paste a job URL to evaluate it
-> - Run `/career-ops scan` (or `/career-ops-scan` if using OpenCode) to search portals
+> - Paste a program URL to evaluate it
+> - Run `/career-ops scan` (or `/career-ops-scan` if using OpenCode) to search universities
 > - Run `/career-ops` to see all commands
 >
 > Everything is customizable — just ask me to change anything.
 >
-> Tip: Having a personal portfolio dramatically improves your job search. If you don't have one yet, the author's portfolio is also open source: github.com/santifer/cv-santiago — feel free to fork it and make it yours."
+> Tip: Having a personal portfolio dramatically improves your application. If you don't have one yet, the author's portfolio is also open source: github.com/santifer/cv-santiago — feel free to fork it and make it yours."
 
 Then suggest automation:
-> "Want me to scan for new offers automatically? I can set up a recurring scan every few days so you don't miss anything. Just say 'scan every 3 days' and I'll configure it."
+> "Want me to scan for new programs automatically? I can set up a recurring scan every few days so you don't miss anything. Just say 'scan every 3 days' and I'll configure it."
 
-If the user accepts, use the `/loop` or `/schedule` skill (if available) to set up a recurring `/career-ops scan` (or `/career-ops-scan` if using OpenCode). If those aren't available, suggest adding a cron job or remind them to run `/career-ops scan` (or `/career-ops-scan` if using OpenCode) periodically.
+If the user accepts, use the `/loop` or `/schedule` skill (if available) to set up a recurring `/career-ops scan` (or `/career-ops-scan` if using OpenCode). If those aren't available, suggest adding a cron job or remind them to run `/career-ops scan` (or `/career-ops-scan` if using OpenCode) periodically to check for new programs.
 
 ### Personalization
 
 This system is designed to be customized by YOU (AI Agent). When the user asks you to change archetypes, translate modes, adjust scoring, add companies, or modify negotiation scripts -- do it directly. You read the same files you use, so you know exactly what to edit.
 
 **Common customization requests:**
-- "Change the archetypes to [backend/frontend/data/devops] roles" → edit `modes/_shared.md`
+- "Change the program-type archetypes to [research/professional/interdisciplinary] tracks" → edit `modes/_shared.md`
 - "Translate the modes to English" → edit all files in `modes/`
-- "Add these companies to my portals" → edit `portals.yml`
+- "Add these universities to my list" → edit `universities.yml`
 - "Update my profile" → edit `config/profile.yml`
 - "Change the CV template design" → edit `templates/cv-template.html`
 - "Adjust the scoring weights" → edit `modes/_shared.md` and `batch/batch-prompt.md`
@@ -202,20 +204,24 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 
 | If the user... | Mode |
 |----------------|------|
-| Pastes JD or URL | auto-pipeline (evaluate + report + PDF + tracker) |
-| Asks to evaluate offer | `oferta` |
-| Asks to compare offers | `ofertas` |
-| Wants LinkedIn outreach | `contacto` |
-| Asks for company research | `deep` |
-| Preps for interview at specific company | `interview-prep` |
+| Pastes program URL or description | auto-pipeline (evaluate + report + PDF + tracker) |
+| Asks to evaluate program | `program` |
+| Asks to compare programs | `ofertas` |
+| Wants to cold-email a professor | `contacto` |
+| Asks for program/faculty research | `deep` |
+| Prepares for admissions interview | `interview-prep` |
 | Wants to generate CV/PDF | `pdf` |
 | Evaluates a course/cert | `training` |
 | Evaluates portfolio project | `project` |
 | Asks about application status | `tracker` |
 | Fills out application form | `apply` |
-| Searches for new offers | `scan` |
+| Searches for new programs | `scan` |
 | Processes pending URLs | `pipeline` |
-| Batch processes offers | `batch` |
+| Batch processes programs | `batch` |
+| Wants to write SOP | `sop` |
+| Wants research statement | `research-statement` |
+| Wants guidance on writing sample | `writing-sample` |
+| Tracks recommendation letters | `rec-tracker` |
 
 ### CV Source of Truth
 
@@ -227,7 +233,7 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 
 ## Ethical Use -- CRITICAL
 
-**This system is designed for quality, not quantity.** The goal is to help the user find and apply to roles where there is a genuine match -- not to spam companies with mass applications.
+**This system is designed for quality, not quantity.** The goal is to help the user find and apply to programs where there is a genuine match -- not to mass-apply to every program in sight.
 
 - **NEVER submit an application without the user reviewing it first.** Fill forms, draft answers, generate PDFs -- but always STOP before clicking Submit/Send/Apply. The user makes the final call.
 - **Strongly discourage low-fit applications.** If a score is below 4.0/5, explicitly recommend against applying. The user's time and the recruiter's time are both valuable. Only proceed if the user has a specific reason to override the score.
@@ -252,7 +258,7 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 - Node.js (mjs modules), Playwright (PDF + scraping), YAML (config), HTML/CSS (template), Markdown (data), Canva MCP (optional visual CV)
 - Scripts in `.mjs`, configuration in YAML
 - Output in `output/` (gitignored), Reports in `reports/`
-- JDs in `jds/` (referenced as `local:jds/{file}` in pipeline.md)
+- Program descriptions in `programs/` (optional, referenced as `local:programs/{file}` in pipeline.md)
 - Batch in `batch/` (gitignored except scripts and prompt)
 - Report numbering: sequential 3-digit zero-padded, max existing + 1
 - **RULE: After each batch of evaluations, run `node merge-tracker.mjs`** to merge tracker additions and avoid duplications.

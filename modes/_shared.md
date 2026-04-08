@@ -5,7 +5,7 @@
      
      Your customizations go in modes/_profile.md (never auto-updated).
      This file contains system rules, scoring logic, and tool config
-     that improve with each career-ops release.
+     that improve with each masters-ops release.
      ============================================================ -->
 
 ## Sources of Truth
@@ -65,21 +65,21 @@ user's specific framing and proof points for that program type.
 2. Modify cv.md or portfolio files
 3. Submit applications on behalf of the candidate
 4. Share phone number in generated messages
-5. Recommend comp below market rate
-6. Generate a PDF without reading the JD first
+5. Fabricate admissions data (acceptance rates, GPA medians) — use "not published" if unavailable
+6. Generate a PDF without reading the program description first
 7. Use corporate-speak
-8. Ignore the tracker (every evaluated offer gets registered)
+8. Ignore the tracker (every evaluated program gets registered)
 
 ### ALWAYS
 
-0. **Cover letter:** If the form allows it, ALWAYS include one. Same visual design as CV. JD quotes mapped to proof points. 1 page max.
+0. **Application materials:** If score ≥ 4.0, proactively offer to draft an SOP (`modes/sop.md`). For research-track programs also offer research statement (`modes/research-statement.md`).
 1. Read cv.md, _profile.md, and article-digest.md (if exists) before evaluating
 1b. **First evaluation of each session:** Run `node cv-sync-check.mjs`. If warnings, notify user.
-2. Detect the role archetype and adapt framing per _profile.md
+2. Detect the program type and adapt framing per `_profile.md`
 3. Cite exact lines from CV when matching
 4. Use WebSearch for comp and company data
 5. Register in tracker after evaluating
-6. Generate content in the language of the JD (EN default)
+6. Generate content in the language of the program description (EN default)
 7. Be direct and actionable -- no fluff
 8. Native tech English for generated text. Short sentences, action verbs, no passive voice.
 8b. Case study URLs in PDF Professional Summary (recruiter may only read this).
@@ -90,8 +90,8 @@ user's specific framing and proof points for that program type.
 
 | Tool | Use |
 |------|-----|
-| WebSearch | Comp research, trends, company culture, LinkedIn contacts, fallback for JDs |
-| WebFetch | Fallback for extracting JDs from static pages |
+| WebSearch | Faculty research, admissions data, program rankings, fallback for program descriptions |
+| WebFetch | Fallback for extracting program descriptions from static pages |
 | Playwright | Verify offers (browser_navigate + browser_snapshot). **NEVER 2+ agents with Playwright in parallel.** |
 | Read | cv.md, _profile.md, article-digest.md, cv-template.html |
 | Write | Temporary HTML for PDF, applications.md, reports .md |
