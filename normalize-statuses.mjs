@@ -3,12 +3,18 @@
  * normalize-statuses.mjs — Clean non-canonical states in applications.md
  *
  * Maps all non-canonical statuses to canonical ones per states.yml:
- *   Evaluada, Aplicado, Respondido, Entrevista, Oferta, Rechazado, Descartado, NO APLICAR
+ *   Evaluated, In Progress, Submitted, Under Review, Interview,
+ *   Admitted, Waitlisted, Rejected, Committed, Declined, SKIP
  *
- * Also strips markdown bold (**) and dates from the status field,
- * moving DUPLICADO info to the notes column.
+ * Also maps legacy Spanish job-search states to new English graduate states:
+ *   Evaluada → Evaluated, Aplicado → Submitted, Respondido → Under Review,
+ *   Oferta → Admitted, Rechazado → Rejected, Descartado → Declined, NO APLICAR → SKIP
  *
- * Run: node career-ops/normalize-statuses.mjs [--dry-run]
+ * Also strips markdown bold (**) and dates from the status field.
+ *
+ * Handles both old (9-col, no Deadline) and new (10-col, with Deadline) row formats.
+ *
+ * Run: node normalize-statuses.mjs [--dry-run]
  */
 
 import { readFileSync, writeFileSync, copyFileSync, existsSync } from 'fs';
@@ -22,75 +28,81 @@ const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
   : join(CAREER_OPS, 'applications.md');
 const DRY_RUN = process.argv.includes('--dry-run');
 
+// Canonical graduate application lifecycle states
+const CANONICAL_STATES = [
+  'Evaluated', 'In Progress', 'Submitted', 'Under Review', 'Interview',
+  'Admitted', 'Waitlisted', 'Rejected', 'Committed', 'Declined', 'SKIP',
+];
+
 // Canonical status mapping
 function normalizeStatus(raw) {
   // Strip markdown bold
   let s = raw.replace(/\*\*/g, '').trim();
   const lower = s.toLowerCase();
 
-  // DUPLICADO variants → Descartado
-  if (/^duplicado/i.test(s) || /^dup\b/i.test(s)) {
-    return { status: 'Descartado', moveToNotes: raw.trim() };
-  }
-
-  // CERRADA → Descartado
-  if (/^cerrada$/i.test(s)) return { status: 'Descartado' };
-
-  // Cancelada (possibly with date) → Descartado
-  if (/^cancelada/i.test(s)) return { status: 'Descartado' };
-
-  // Descartada → Descartado
-  if (/^descartada$/i.test(s)) return { status: 'Descartado' };
-
-  // Rechazada → Rechazado
-  if (/^rechazada$/i.test(s)) return { status: 'Rechazado' };
-
-  // Rechazado with date → Rechazado (strip date)
-  if (/^rechazado\s+\d{4}/i.test(s)) return { status: 'Rechazado' };
-
-  // Aplicado with date → Aplicado (strip date)
-  if (/^aplicado\s+\d{4}/i.test(s)) return { status: 'Aplicado' };
-
-  // CONDICIONAL → Evaluada
-  if (/^condicional$/i.test(s)) return { status: 'Evaluada' };
-
-  // HOLD → Evaluada
-  if (/^hold$/i.test(s)) return { status: 'Evaluada' };
-
-  // MONITOR → Evaluada
-  if (/^monitor$/i.test(s)) return { status: 'Evaluada' };
-
-  // EVALUAR → Evaluada
-  if (/^evaluar$/i.test(s)) return { status: 'Evaluada' };
-
-  // Verificar → Evaluada
-  if (/^verificar$/i.test(s)) return { status: 'Evaluada' };
-
-  // GEO BLOCKER → NO APLICAR
-  if (/geo.?blocker/i.test(s)) return { status: 'NO APLICAR' };
-
-  // Repost #NNN → Descartado
-  if (/^repost/i.test(s)) return { status: 'Descartado', moveToNotes: raw.trim() };
-
-  // "—" (em dash, no status) → Descartado
-  if (s === '—' || s === '-' || s === '') return { status: 'Descartado' };
+  // Strip trailing dates (e.g. "Aplicado 2024-01-15")
+  const statusOnly = lower.replace(/\s+\d{4}-\d{2}-\d{2}.*$/, '').trim();
 
   // Already canonical — just fix casing/bold
-  const canonical = [
-    'Evaluada', 'Aplicado', 'Respondido', 'Entrevista',
-    'Oferta', 'Rechazado', 'Descartado', 'NO APLICAR',
-  ];
-  for (const c of canonical) {
-    if (lower === c.toLowerCase()) return { status: c };
+  for (const c of CANONICAL_STATES) {
+    if (statusOnly === c.toLowerCase()) return { status: c };
   }
 
-  // Aliases from states.yml
-  if (['enviada', 'aplicada', 'applied', 'sent'].includes(lower)) return { status: 'Aplicado' };
-  if (['cerrada', 'descartada'].includes(lower)) return { status: 'Descartado' };
-  if (['no aplicar', 'no_aplicar', 'skip'].includes(lower)) return { status: 'NO APLICAR' };
+  // Legacy Spanish job-search states → new English graduate states
+  if (['evaluada', 'evaluado', 'evaluated', 'condicional', 'hold', 'evaluar', 'verificar', 'monitor'].includes(statusOnly)) {
+    return { status: 'Evaluated' };
+  }
+  if (['aplicado', 'aplicada', 'applied', 'enviada', 'enviado', 'sent'].includes(statusOnly)) {
+    return { status: 'Submitted' };
+  }
+  if (['respondido'].includes(statusOnly)) {
+    return { status: 'Under Review' };
+  }
+  if (['entrevista'].includes(statusOnly)) {
+    return { status: 'Interview' };
+  }
+  if (['oferta'].includes(statusOnly)) {
+    return { status: 'Admitted' };
+  }
+  if (['rechazado', 'rechazada'].includes(statusOnly)) {
+    return { status: 'Rejected' };
+  }
+  if (['descartado', 'descartada', 'descartada', 'cerrada', 'cancelada', 'discarded'].includes(statusOnly)) {
+    return { status: 'Declined' };
+  }
+  if (['no aplicar', 'no_aplicar', 'skip', 'pass', 'not applying'].includes(statusOnly)) {
+    return { status: 'SKIP' };
+  }
+
+  // DUPLICADO/Repost variants → Declined
+  if (/^duplicado/i.test(s) || /^dup\b/i.test(s)) {
+    return { status: 'Declined', moveToNotes: raw.trim() };
+  }
+  if (/^repost/i.test(s)) {
+    return { status: 'Declined', moveToNotes: raw.trim() };
+  }
+
+  // GEO BLOCKER → SKIP
+  if (/geo.?blocker/i.test(s)) return { status: 'SKIP' };
+
+  // "—" or blank → Declined
+  if (s === '—' || s === '-' || s === '') return { status: 'Declined' };
 
   // Unknown — flag it
   return { status: null, unknown: true };
+}
+
+// Detect row format by column count
+// Old (9-col): '' | # | date | company | role | score | status | pdf | report | notes | ''  → length 11
+// New (10-col): '' | # | date | deadline | university | program | score | status | pdf | report | notes | ''  → length 12
+function getColumnIndices(parts) {
+  if (parts.length >= 12) {
+    // New 10-col format
+    return { statusIdx: 7, scoreIdx: 6, notesIdx: 10 };
+  } else {
+    // Old 9-col format
+    return { statusIdx: 6, scoreIdx: 5, notesIdx: 9 };
+  }
 }
 
 // Read applications.md
@@ -109,14 +121,15 @@ for (let i = 0; i < lines.length; i++) {
   if (!line.startsWith('|')) continue;
 
   const parts = line.split('|').map(s => s.trim());
-  // Format: ['', '#', 'fecha', 'empresa', 'rol', 'score', 'STATUS', 'pdf', 'report', 'notas', '']
-  if (parts.length < 9) continue;
+  if (parts.length < 10) continue;
   if (parts[1] === '#' || parts[1] === '---' || parts[1] === '') continue;
 
   const num = parseInt(parts[1]);
   if (isNaN(num)) continue;
 
-  const rawStatus = parts[6];
+  const { statusIdx, scoreIdx, notesIdx } = getColumnIndices(parts);
+
+  const rawStatus = parts[statusIdx];
   const result = normalizeStatus(rawStatus);
 
   if (result.unknown) {
@@ -128,21 +141,21 @@ for (let i = 0; i < lines.length; i++) {
 
   // Apply change
   const oldStatus = rawStatus;
-  parts[6] = result.status;
+  parts[statusIdx] = result.status;
 
-  // Move DUPLICADO info to notes if needed
-  if (result.moveToNotes && parts[9]) {
-    const existing = parts[9] || '';
+  // Move DUPLICADO/Repost info to notes if needed
+  if (result.moveToNotes && parts[notesIdx] !== undefined) {
+    const existing = parts[notesIdx] || '';
     if (!existing.includes(result.moveToNotes)) {
-      parts[9] = result.moveToNotes + (existing ? '. ' + existing : '');
+      parts[notesIdx] = result.moveToNotes + (existing ? '. ' + existing : '');
     }
-  } else if (result.moveToNotes && !parts[9]) {
-    parts[9] = result.moveToNotes;
+  } else if (result.moveToNotes && parts[notesIdx] === undefined) {
+    parts[notesIdx] = result.moveToNotes;
   }
 
   // Also strip bold from score field
-  if (parts[5]) {
-    parts[5] = parts[5].replace(/\*\*/g, '');
+  if (parts[scoreIdx]) {
+    parts[scoreIdx] = parts[scoreIdx].replace(/\*\*/g, '');
   }
 
   // Reconstruct line

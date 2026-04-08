@@ -248,13 +248,13 @@ Report numbering: max existing report number + 1, zero-padded to 3 digits.
 ## Tracker Entry
 
 Write one TSV file per evaluation to `batch/tracker-additions/{###}-{university-slug}.tsv`.
-Single line, 9 tab-separated columns:
+Single line, 10 tab-separated columns:
 
 ```
-{num}\t{date}\t{university}\t{program}\t{status}\t{score}/5\t{pdf_emoji}\t[{num}](reports/{num}-{slug}-{date}.md)\t{note}
+{num}\t{date}\t{university}\t{program}\t{status}\t{score}/5\t{pdf_emoji}\t[{num}](reports/{num}-{slug}-{date}.md)\t{deadline}\t{note}
 ```
 
-**Column order (IMPORTANT — status BEFORE score):**
+**Column order (IMPORTANT — status BEFORE score, deadline between report and notes):**
 1. `num` — sequential number (integer, matches report number)
 2. `date` — YYYY-MM-DD
 3. `university` — short university name (e.g., "MIT", "Stanford")
@@ -263,7 +263,8 @@ Single line, 9 tab-separated columns:
 6. `score` — format `X.X/5`
 7. `pdf` — `❌` (set to ✅ only after academic CV is generated for this program)
 8. `report` — markdown link `[num](reports/...)`
-9. `notes` — one-line summary, e.g. "Score 4.2 — strong academic fit, no TA funding"
+9. `deadline` — application deadline as `YYYY-MM-DD`, or `rolling`, or `—` if not found
+10. `notes` — one-line summary, e.g. "Score 4.2 — strong academic fit, no TA funding"
 
 **NEVER edit `data/applications.md` directly.** The TSV is merged by `merge-tracker.mjs`.
 

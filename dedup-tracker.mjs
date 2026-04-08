@@ -6,7 +6,9 @@
  * Keeps entry with highest score. If discarded entry had more advanced status,
  * preserves that status. Merges notes.
  *
- * Run: node career-ops/dedup-tracker.mjs [--dry-run]
+ * Handles both old (9-col, no Deadline) and new (10-col, with Deadline) row formats.
+ *
+ * Run: node dedup-tracker.mjs [--dry-run]
  */
 
 import { readFileSync, writeFileSync, copyFileSync, existsSync } from 'fs';
@@ -20,17 +22,22 @@ const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
   : join(CAREER_OPS, 'applications.md');
 const DRY_RUN = process.argv.includes('--dry-run');
 
-// Status advancement order (higher = more advanced in pipeline)
-// Aplicado > Rechazado because active application > terminal state
+// Status advancement order for graduate application lifecycle (higher = more advanced)
+// Terminal states (rejected/declined/skip) are treated below active states
 const STATUS_RANK = {
-  'no aplicar': 0,
-  'descartado': 0,
-  'rechazado': 1,  // Terminal — below active states
-  'evaluada': 2,
-  'aplicado': 3,
-  'respondido': 4,
-  'entrevista': 5,
-  'oferta': 6,
+  'skip': 0,
+  'declined': 0,
+  'rejected': 1,      // Terminal — below active states
+  'evaluated': 2,
+  'in progress': 3,
+  'in_progress': 3,
+  'submitted': 4,
+  'under review': 5,
+  'under_review': 5,
+  'interview': 6,
+  'waitlisted': 7,
+  'admitted': 8,
+  'committed': 9,
 };
 
 function normalizeCompany(name) {
@@ -61,23 +68,49 @@ function parseScore(s) {
   return m ? parseFloat(m[1]) : 0;
 }
 
+/**
+ * Parse an applications.md row into a structured object.
+ * Handles both:
+ *   Old (9-col): '' | # | date | company | role | score | status | pdf | report | notes | ''  → parts.length 11
+ *   New (10-col): '' | # | date | deadline | university | program | score | status | pdf | report | notes | ''  → parts.length 12
+ */
 function parseAppLine(line) {
   const parts = line.split('|').map(s => s.trim());
-  if (parts.length < 9) return null;
+  if (parts.length < 10) return null;
   const num = parseInt(parts[1]);
   if (isNaN(num)) return null;
-  return {
-    num,
-    date: parts[2],
-    company: parts[3],
-    role: parts[4],
-    score: parts[5],
-    status: parts[6],
-    pdf: parts[7],
-    report: parts[8],
-    notes: parts[9] || '',
-    raw: line,
-  };
+
+  if (parts.length >= 12) {
+    // New 10-col format (with Deadline column)
+    return {
+      num,
+      date: parts[2],
+      deadline: parts[3],
+      company: parts[4],
+      role: parts[5],
+      score: parts[6],
+      status: parts[7],
+      pdf: parts[8],
+      report: parts[9],
+      notes: parts[10] || '',
+      raw: line,
+    };
+  } else {
+    // Old 9-col format (no Deadline column)
+    return {
+      num,
+      date: parts[2],
+      deadline: '—',
+      company: parts[3],
+      role: parts[4],
+      score: parts[5],
+      status: parts[6],
+      pdf: parts[7],
+      report: parts[8],
+      notes: parts[9] || '',
+      raw: line,
+    };
+  }
 }
 
 // Read
@@ -140,10 +173,10 @@ for (const [company, companyEntries] of groups) {
     const keeper = cluster[0];
 
     // Check if any removed entry has more advanced status
-    let bestStatusRank = STATUS_RANK[keeper.status.toLowerCase()] || 0;
+    let bestStatusRank = STATUS_RANK[keeper.status.toLowerCase()] ?? 0;
     let bestStatus = keeper.status;
     for (let k = 1; k < cluster.length; k++) {
-      const rank = STATUS_RANK[cluster[k].status.toLowerCase()] || 0;
+      const rank = STATUS_RANK[cluster[k].status.toLowerCase()] ?? 0;
       if (rank > bestStatusRank) {
         bestStatusRank = rank;
         bestStatus = cluster[k].status;
@@ -155,7 +188,12 @@ for (const [company, companyEntries] of groups) {
       const lineIdx = entryLineMap.get(keeper.num);
       if (lineIdx !== undefined) {
         const parts = lines[lineIdx].split('|').map(s => s.trim());
-        parts[6] = bestStatus;
+        // Detect format
+        if (parts.length >= 12) {
+          parts[7] = bestStatus; // New 10-col format: status at index 7
+        } else {
+          parts[6] = bestStatus; // Old 9-col format: status at index 6
+        }
         lines[lineIdx] = '| ' + parts.slice(1, -1).join(' | ') + ' |';
         console.log(`  📝 #${keeper.num}: status promoted to "${bestStatus}" (from #${cluster.find(e => e.status === bestStatus)?.num})`);
       }

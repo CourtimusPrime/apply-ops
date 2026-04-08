@@ -3,15 +3,16 @@
  * merge-tracker.mjs — Merge batch tracker additions into applications.md
  *
  * Handles multiple TSV formats:
- * - 9-col: num\tdate\tcompany\trole\tstatus\tscore\tpdf\treport\tnotes
- * - 8-col: num\tdate\tcompany\trole\tstatus\tscore\tpdf\treport (no notes)
+ * - 10-col (new, with deadline): num\tdate\tuniversity\tprogram\tstatus\tscore\tpdf\treport\tdeadline\tnotes
+ * - 9-col (legacy, no deadline): num\tdate\tuniversity\tprogram\tstatus\tscore\tpdf\treport\tnotes
+ * - 8-col (legacy, no notes): num\tdate\tuniversity\tprogram\tstatus\tscore\tpdf\treport
  * - Pipe-delimited (markdown table row): | col | col | ... |
  *
  * Dedup: company normalized + role fuzzy match + report number match
  * If duplicate with higher score → update in-place, update report link
  * Validates status against states.yml (rejects non-canonical, logs warning)
  *
- * Run: node career-ops/merge-tracker.mjs [--dry-run] [--verify]
+ * Run: node merge-tracker.mjs [--dry-run] [--verify]
  */
 
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, renameSync, existsSync } from 'fs';
@@ -28,8 +29,11 @@ const MERGED_DIR = join(ADDITIONS_DIR, 'merged');
 const DRY_RUN = process.argv.includes('--dry-run');
 const VERIFY = process.argv.includes('--verify');
 
-// Canonical states and aliases
-const CANONICAL_STATES = ['Evaluada', 'Aplicado', 'Respondido', 'Entrevista', 'Oferta', 'Rechazado', 'Descartado', 'NO APLICAR'];
+// Canonical graduate application lifecycle states and aliases
+const CANONICAL_STATES = [
+  'Evaluated', 'In Progress', 'Submitted', 'Under Review', 'Interview',
+  'Admitted', 'Waitlisted', 'Rejected', 'Committed', 'Declined', 'SKIP',
+];
 
 function validateStatus(status) {
   const clean = status.replace(/\*\*/g, '').replace(/\s+\d{4}-\d{2}-\d{2}.*$/, '').trim();
@@ -39,23 +43,38 @@ function validateStatus(status) {
     if (valid.toLowerCase() === lower) return valid;
   }
 
-  // Aliases
+  // Aliases (new English variants)
   const aliases = {
-    'enviada': 'Aplicado', 'aplicada': 'Aplicado', 'applied': 'Aplicado', 'sent': 'Aplicado',
-    'cerrada': 'Descartado', 'descartada': 'Descartado', 'cancelada': 'Descartado',
-    'rechazada': 'Rechazado',
-    'no aplicar': 'NO APLICAR', 'no_aplicar': 'NO APLICAR', 'skip': 'NO APLICAR', 'monitor': 'NO APLICAR',
-    'condicional': 'Evaluada', 'hold': 'Evaluada', 'evaluar': 'Evaluada', 'verificar': 'Evaluada',
-    'geo blocker': 'NO APLICAR',
+    'in-progress': 'In Progress', 'wip': 'In Progress', 'drafting': 'In Progress', 'started': 'In Progress',
+    'applied': 'Submitted', 'sent': 'Submitted', 'enviado': 'Submitted', 'enviada': 'Submitted',
+    'under_review': 'Under Review', 'reviewing': 'Under Review', 'review': 'Under Review',
+    'interview scheduled': 'Interview', 'invited': 'Interview',
+    'accepted': 'Admitted', 'offer': 'Admitted', 'acceptance': 'Admitted',
+    'waitlist': 'Waitlisted', 'wait list': 'Waitlisted', 'wait-listed': 'Waitlisted',
+    'declined by program': 'Rejected', 'denied': 'Rejected',
+    'enrolled': 'Committed', 'accepted offer': 'Committed', 'matriculated': 'Committed',
+    'withdrew': 'Declined', 'withdrew application': 'Declined', 'declined offer': 'Declined',
+    'discarded': 'Declined', 'cerrada': 'Declined', 'cancelada': 'Declined',
+    'no aplicar': 'SKIP', 'no_aplicar': 'SKIP', 'skip': 'SKIP', 'pass': 'SKIP', 'not applying': 'SKIP',
+    // Legacy Spanish job-search states
+    'evaluada': 'Evaluated', 'evaluado': 'Evaluated',
+    'aplicado': 'Submitted', 'aplicada': 'Submitted',
+    'respondido': 'Under Review',
+    'entrevista': 'Interview',
+    'oferta': 'Admitted',
+    'rechazado': 'Rejected', 'rechazada': 'Rejected',
+    'descartado': 'Declined', 'descartada': 'Declined',
+    'condicional': 'Evaluated', 'hold': 'Evaluated', 'monitor': 'Evaluated',
+    'geo blocker': 'SKIP',
   };
 
   if (aliases[lower]) return aliases[lower];
 
-  // DUPLICADO/Repost → Descartado
-  if (/^(duplicado|dup|repost)/i.test(lower)) return 'Descartado';
+  // DUPLICADO/Repost → Declined
+  if (/^(duplicado|dup|repost)/i.test(lower)) return 'Declined';
 
-  console.warn(`⚠️  Non-canonical status "${status}" → defaulting to "Evaluada"`);
-  return 'Evaluada';
+  console.warn(`⚠️  Non-canonical status "${status}" → defaulting to "Evaluated"`);
+  return 'Evaluated';
 }
 
 function normalizeCompany(name) {
@@ -79,21 +98,42 @@ function parseScore(s) {
   return m ? parseFloat(m[1]) : 0;
 }
 
+/**
+ * Parse an applications.md row into a structured object.
+ * Handles both:
+ *   Old (9-col): '' | # | date | company | role | score | status | pdf | report | notes | ''  → parts.length 11
+ *   New (10-col): '' | # | date | deadline | university | program | score | status | pdf | report | notes | ''  → parts.length 12
+ */
 function parseAppLine(line) {
   const parts = line.split('|').map(s => s.trim());
-  if (parts.length < 9) return null;
+  if (parts.length < 10) return null;
   const num = parseInt(parts[1]);
   if (isNaN(num) || num === 0) return null;
-  return {
-    num, date: parts[2], company: parts[3], role: parts[4],
-    score: parts[5], status: parts[6], pdf: parts[7], report: parts[8],
-    notes: parts[9] || '', raw: line,
-  };
+
+  if (parts.length >= 12) {
+    // New 10-col format (with Deadline column)
+    return {
+      num, date: parts[2], deadline: parts[3], company: parts[4], role: parts[5],
+      score: parts[6], status: parts[7], pdf: parts[8], report: parts[9],
+      notes: parts[10] || '', raw: line,
+    };
+  } else {
+    // Old 9-col format (no Deadline column) — deadline defaults to '—'
+    return {
+      num, date: parts[2], deadline: '—', company: parts[3], role: parts[4],
+      score: parts[5], status: parts[6], pdf: parts[7], report: parts[8],
+      notes: parts[9] || '', raw: line,
+    };
+  }
 }
 
 /**
  * Parse a TSV file content into a structured addition object.
- * Handles: 9-col TSV, 8-col TSV, pipe-delimited markdown.
+ * Handles:
+ *   10-col TSV (new, with deadline): num\tdate\tuniversity\tprogram\tstatus\tscore\tpdf\treport\tdeadline\tnotes
+ *    9-col TSV (legacy, no deadline): num\tdate\tuniversity\tprogram\tstatus\tscore\tpdf\treport\tnotes
+ *    8-col TSV (legacy, no notes): num\tdate\tuniversity\tprogram\tstatus\tscore\tpdf\treport
+ *   Pipe-delimited markdown row
  */
 function parseTsvContent(content, filename) {
   content = content.trim();
@@ -109,10 +149,12 @@ function parseTsvContent(content, filename) {
       console.warn(`⚠️  Skipping malformed pipe-delimited ${filename}: ${parts.length} fields`);
       return null;
     }
-    // Format: num | date | company | role | score | status | pdf | report | notes
+    // Format: num | date | university | program | score | status | pdf | report | notes
+    // (old pipe format, no deadline)
     addition = {
       num: parseInt(parts[0]),
       date: parts[1],
+      deadline: '—',
       company: parts[2],
       role: parts[3],
       score: parts[4],
@@ -135,8 +177,9 @@ function parseTsvContent(content, filename) {
     const col5 = parts[5].trim();
     const col4LooksLikeScore = /^\d+\.?\d*\/5$/.test(col4) || col4 === 'N/A' || col4 === 'DUP';
     const col5LooksLikeScore = /^\d+\.?\d*\/5$/.test(col5) || col5 === 'N/A' || col5 === 'DUP';
-    const col4LooksLikeStatus = /^(evaluada|aplicado|respondido|entrevista|oferta|rechazado|descartado|no aplicar|cerrada|duplicado|repost|condicional|hold|monitor)/i.test(col4);
-    const col5LooksLikeStatus = /^(evaluada|aplicado|respondido|entrevista|oferta|rechazado|descartado|no aplicar|cerrada|duplicado|repost|condicional|hold|monitor)/i.test(col5);
+    const statusPattern = /^(evaluated|evaluada|evaluado|in progress|in-progress|submitted|aplicado|under review|respondido|interview|entrevista|admitted|oferta|waitlisted|rejected|rechazado|committed|declined|descartado|skip|no aplicar|cerrada|duplicado|repost|condicional|hold|monitor)/i;
+    const col4LooksLikeStatus = statusPattern.test(col4);
+    const col5LooksLikeStatus = statusPattern.test(col5);
 
     let statusCol, scoreCol;
     if (col4LooksLikeStatus && !col4LooksLikeScore) {
@@ -153,16 +196,35 @@ function parseTsvContent(content, filename) {
       statusCol = col4; scoreCol = col5;
     }
 
+    // Detect TSV column count:
+    //   10-col (new): num\tdate\tuniversity\tprogram\tstatus\tscore\tpdf\treport\tdeadline\tnotes
+    //    9-col (old): num\tdate\tuniversity\tprogram\tstatus\tscore\tpdf\treport\tnotes
+    let deadline = '—';
+    let notes = '';
+
+    if (parts.length >= 10) {
+      // New 10-col format: deadline is at parts[8], notes at parts[9]
+      deadline = parts[8].trim() || '—';
+      notes = parts[9] ? parts[9].trim() : '';
+    } else {
+      // Old 9-col format: no deadline, notes at parts[8]
+      if (parts.length < 10) {
+        console.warn(`⚠️  ${filename}: 9-col TSV (no deadline) — setting deadline to "—"`);
+      }
+      notes = parts[8] ? parts[8].trim() : '';
+    }
+
     addition = {
       num: parseInt(parts[0]),
       date: parts[1],
+      deadline,
       company: parts[2],
       role: parts[3],
       status: validateStatus(statusCol),
       score: scoreCol,
       pdf: parts[6],
       report: parts[7],
-      notes: parts[8] || '',
+      notes,
     };
   }
 
@@ -187,7 +249,7 @@ const existingApps = [];
 let maxNum = 0;
 
 for (const line of appLines) {
-  if (line.startsWith('|') && !line.includes('---') && !line.includes('Empresa')) {
+  if (line.startsWith('|') && !line.includes('---') && !line.includes('University') && !line.includes('Empresa')) {
     const app = parseAppLine(line);
     if (app) {
       existingApps.push(app);
@@ -265,7 +327,8 @@ for (const file of tsvFiles) {
       console.log(`🔄 Update: #${duplicate.num} ${addition.company} — ${addition.role} (${oldScore}→${newScore})`);
       const lineIdx = appLines.indexOf(duplicate.raw);
       if (lineIdx >= 0) {
-        const updatedLine = `| ${duplicate.num} | ${addition.date} | ${addition.company} | ${addition.role} | ${addition.score} | ${duplicate.status} | ${duplicate.pdf} | ${addition.report} | Re-eval ${addition.date} (${oldScore}→${newScore}). ${addition.notes} |`;
+        const dl = addition.deadline || duplicate.deadline || '—';
+        const updatedLine = `| ${duplicate.num} | ${addition.date} | ${dl} | ${addition.company} | ${addition.role} | ${addition.score} | ${duplicate.status} | ${duplicate.pdf} | ${addition.report} | Re-eval ${addition.date} (${oldScore}→${newScore}). ${addition.notes} |`;
         appLines[lineIdx] = updatedLine;
         updated++;
       }
@@ -278,7 +341,8 @@ for (const file of tsvFiles) {
     const entryNum = addition.num > maxNum ? addition.num : ++maxNum;
     if (addition.num > maxNum) maxNum = addition.num;
 
-    const newLine = `| ${entryNum} | ${addition.date} | ${addition.company} | ${addition.role} | ${addition.score} | ${addition.status} | ${addition.pdf} | ${addition.report} | ${addition.notes} |`;
+    const dl = addition.deadline || '—';
+    const newLine = `| ${entryNum} | ${addition.date} | ${dl} | ${addition.company} | ${addition.role} | ${addition.score} | ${addition.status} | ${addition.pdf} | ${addition.report} | ${addition.notes} |`;
     newLines.push(newLine);
     added++;
     console.log(`➕ Add #${entryNum}: ${addition.company} — ${addition.role} (${addition.score})`);
