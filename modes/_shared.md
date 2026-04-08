@@ -25,37 +25,37 @@
 
 ## Scoring System
 
-The evaluation uses 6 blocks (A-F) with a global score of 1-5:
+The evaluation uses 6 blocks (A–F) with a global score of 1–5:
 
 | Dimension | What it measures |
 |-----------|-----------------|
-| Match con CV | Skills, experience, proof points alignment |
-| North Star alignment | How well the role fits the user's target archetypes (from _profile.md) |
-| Comp | Salary vs market (5=top quartile, 1=well below) |
-| Cultural signals | Company culture, growth, stability, remote policy |
-| Red flags | Blockers, warnings (negative adjustments) |
+| Academic Fit | GPA, test scores, and research background vs program requirements |
+| Research / Career Fit | Alignment of research interests with faculty directions and program goals |
+| Funding | Quality of funding package (fellowship/RA/TA), net annual cost vs profile ceiling |
+| Program Quality | Ranking context, faculty strength, alumni outcomes, program reputation |
+| Red Flags | Visa complications, accreditation issues, unrealistic deadline, outlier acceptance rate |
 | **Global** | Weighted average of above |
 
 **Score interpretation:**
-- 4.5+ → Strong match, recommend applying immediately
-- 4.0-4.4 → Good match, worth applying
-- 3.5-3.9 → Decent but not ideal, apply only if specific reason
-- Below 3.5 → Recommend against applying (see Ethical Use in CLAUDE.md)
+- 4.5+ → Strong fit, apply now
+- 4.0–4.4 → Good fit, worth applying
+- 3.5–3.9 → Borderline; apply only if specific reason
+- Below 3.5 → Recommend against (see Ethical Use in CLAUDE.md)
 
-## Archetype Detection
+## Program Type Detection
 
-Classify every offer into one of these types (or hybrid of 2):
+Classify every program into one of these types (or hybrid of 2):
 
-| Archetype | Key signals in JD |
-|-----------|-------------------|
-| AI Platform / LLMOps | "observability", "evals", "pipelines", "monitoring", "reliability" |
-| Agentic / Automation | "agent", "HITL", "orchestration", "workflow", "multi-agent" |
-| Technical AI PM | "PRD", "roadmap", "discovery", "stakeholder", "product manager" |
-| AI Solutions Architect | "architecture", "enterprise", "integration", "design", "systems" |
-| AI Forward Deployed | "client-facing", "deploy", "prototype", "fast delivery", "field" |
-| AI Transformation | "change management", "adoption", "enablement", "transformation" |
+| Program Type | Key signals on program page |
+|--------------|-----------------------------|
+| Research-track MS | Thesis requirement, advisor assignment, lab rotations, faculty research pages prominent |
+| Professional MS | Coursework-heavy, capstone project, career placement stats, industry partnerships |
+| Interdisciplinary MS | Cross-department faculty, applied problem framing, non-standard degree title |
+| Conversion degree | "No prior CS required", bridging coursework, designed for career switchers |
+| Part-time / Online MS | Async options, cohort flexibility, working-professional focus |
 
-After detecting archetype, read `modes/_profile.md` for the user's specific framing and proof points for that archetype.
+After detecting program type, read `modes/_profile.md` framing table for the
+user's specific framing and proof points for that program type.
 
 ## Global Rules
 
